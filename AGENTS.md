@@ -37,7 +37,7 @@ Run **test + lint** before considering any task done. See
 
 ## Code style
 
-<!-- TODO: link to the formatter/linter config (e.g. .eslintrc, ruff.toml) once added. -->
+Formatter/linter config: `biome.json` (run `bun run lint` / `bun run format`).
 Follow the configured formatter and linter; do not hand-format. Match the
 conventions of surrounding code.
 
