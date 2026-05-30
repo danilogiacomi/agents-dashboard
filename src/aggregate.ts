@@ -47,6 +47,8 @@ export function aggregate(
       m.outputTokens += b.outputTokens;
       m.cacheCreationTokens += b.cacheCreationTokens;
       m.cacheReadTokens += b.cacheReadTokens;
+      // CcusageModelBreakdown has no totalTokens field, so derive it as the sum of the four
+      // token components (same definition ccusage uses for session-level totalTokens).
       m.totalTokens += b.inputTokens + b.outputTokens + b.cacheCreationTokens + b.cacheReadTokens;
       modelMap.set(b.modelName, m);
     }
