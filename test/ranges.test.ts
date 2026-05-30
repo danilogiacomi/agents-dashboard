@@ -26,6 +26,18 @@ describe("resolveRange", () => {
   test("last-month spans the full previous calendar month", () => {
     expect(resolveRange("last-month", NOW)).toEqual({ since: "2026-04-01", until: "2026-04-30" });
   });
+  test("last-month in January wraps to December of the prior year", () => {
+    expect(resolveRange("last-month", new Date(2026, 0, 15))).toEqual({
+      since: "2025-12-01",
+      until: "2025-12-31",
+    });
+  });
+  test("last-7-days rolls back across a year boundary", () => {
+    expect(resolveRange("last-7-days", new Date(2026, 0, 3))).toEqual({
+      since: "2025-12-28",
+      until: "2026-01-03",
+    });
+  });
   test("all-time omits both bounds", () => {
     expect(resolveRange("all-time", NOW)).toEqual({});
   });

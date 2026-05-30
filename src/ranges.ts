@@ -7,6 +7,7 @@ export function fmt(d: Date): string {
   return `${y}-${m}-${day}`;
 }
 
+// Structural format check only (YYYY-MM-DD); does not validate calendar ranges (e.g. month 13).
 const ISO_RE = /^\d{4}-\d{2}-\d{2}$/;
 
 export function resolveRange(
