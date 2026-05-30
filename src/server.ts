@@ -3,7 +3,7 @@ import { runCcusage } from "./ccusage";
 import { handleUsage } from "./usage-handler";
 
 const server = Bun.serve({
-  port: Number(process.env.PORT ?? 3000),
+  port: Number(process.env.PORT) || 3000,
   development: process.env.NODE_ENV !== "production",
   routes: {
     "/": index,
