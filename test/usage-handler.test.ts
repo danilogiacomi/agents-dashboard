@@ -61,6 +61,14 @@ describe("handleUsage", () => {
     expect(res.status).toBe(502);
   });
 
+  test("maps a malformed ccusage response (missing arrays) to 502", async () => {
+    const res = await handleUsage(
+      req("tool=claude&template=today"),
+      deps({ run: async () => ({}) as unknown as never }),
+    );
+    expect(res.status).toBe(502);
+  });
+
   test("returns 200 zeroed dashboard for an empty range", async () => {
     const res = await handleUsage(
       req("tool=claude&template=today"),

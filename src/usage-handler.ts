@@ -52,6 +52,12 @@ export async function handleUsage(req: Request, deps: HandlerDeps): Promise<Resp
       deps.run(tool, "daily", range) as Promise<CcusageDailyReport>,
       deps.run(tool, "session", range) as Promise<CcusageSessionReport>,
     ]);
+    if (!Array.isArray(daily?.daily)) {
+      throw new CcusageError("ccusage returned an unexpected daily report shape");
+    }
+    if (!Array.isArray(session?.sessions)) {
+      throw new CcusageError("ccusage returned an unexpected session report shape");
+    }
     const data: DashboardData = aggregate(daily, session, {
       tool,
       template,
