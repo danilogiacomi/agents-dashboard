@@ -20,6 +20,7 @@ bun install
 | Task  | Command              |
 |-------|----------------------|
 | Dev   | `bun run dev`        |
+| Start | `bun run start`      |
 | Test  | `bun test`           |
 | Types | `bun run typecheck`  |
 | Lint  | `bun run lint`       |
