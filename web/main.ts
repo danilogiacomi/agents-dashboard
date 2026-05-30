@@ -69,6 +69,12 @@ function fmtNum(n: number): string {
 function fmtUsd(n: number): string {
   return `$${n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 }
+function esc(s: string): string {
+  return s.replace(
+    /[&<>"]/g,
+    (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c] ?? c,
+  );
+}
 
 async function run(): Promise<void> {
   const params = new URLSearchParams({ tool: toolSel.value, template: selectedTemplate });
@@ -84,12 +90,19 @@ async function run(): Promise<void> {
   runBtn.disabled = true;
   try {
     const res = await fetch(`/api/usage?${params}`);
-    const body = await res.json();
     if (!res.ok) {
-      statusEl.textContent = `Error: ${body.error ?? res.statusText}`;
+      let message = res.statusText;
+      try {
+        const errBody = (await res.json()) as { error?: string };
+        message = errBody.error ?? message;
+      } catch {
+        // error response was not JSON; keep statusText
+      }
+      statusEl.textContent = `Error: ${message}`;
       return;
     }
-    render(body as DashboardData);
+    const body = (await res.json()) as DashboardData;
+    render(body);
   } catch (e) {
     statusEl.textContent = `Request failed: ${(e as Error).message}`;
   } finally {
@@ -104,7 +117,10 @@ function render(data: DashboardData): void {
   if (data.sessions.length === 0) {
     kpisEl.hidden = true;
     tableWrap.innerHTML = "<p>No usage in this range.</p>";
-    for (const c of Object.values(charts)) c?.destroy();
+    for (const key of Object.keys(charts)) {
+      charts[key]?.destroy();
+      charts[key] = undefined;
+    }
     return;
   }
 
@@ -189,9 +205,9 @@ function renderTable(data: DashboardData): void {
   const body = rows
     .map(
       (s) =>
-        `<tr><td>${s.projectPath}</td><td>${s.modelsUsed.join(", ")}</td>` +
+        `<tr><td>${esc(s.projectPath)}</td><td>${esc(s.modelsUsed.join(", "))}</td>` +
         `<td class="num">${fmtNum(s.totalTokens)}</td><td class="num">${fmtUsd(s.totalCost)}</td>` +
-        `<td>${s.lastActivity}</td></tr>`,
+        `<td>${esc(s.lastActivity)}</td></tr>`,
     )
     .join("");
   tableWrap.innerHTML = `${head}${body}</tbody></table>`;
