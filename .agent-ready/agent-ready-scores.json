@@ -1,0 +1,103 @@
+{
+  "schema_version": 2,
+  "project": "ccusage",
+  "timestamp": "2026-05-30T15:37:57Z",
+  "mode": "greenfield",
+  "declared_agents": ["claude"],
+  "overall_score": 36,
+  "level": "Partially Ready",
+  "layers": {
+    "portable":        { "score": 33.0, "max": 94.3 },
+    "target_specific": { "score": 3.2, "max": 5.7, "agents": ["claude"] }
+  },
+  "dimensions": {
+    "agent_instructions_context": {
+      "weight": 18, "raw_score": 73.75, "weighted_score": 13.3,
+      "subcriteria": {
+        "primary_instruction_file": { "score": 75, "weight": 25, "layer": "portable", "na": false, "evidence": "AGENTS.md present, well-structured (setup/build-test-lint/structure/style/security sections); content is templated placeholders pending stack.", "why": "AGENTS.md is the cross-vendor instruction standard agents read first.", "consequence": "Agents start cold and re-derive project knowledge each session.", "fixable_by": "skill", "fix_ref": "/agent-ready fix agent_instructions_context", "effort": "Low" },
+        "instruction_quality": { "score": 50, "weight": 25, "layer": "portable", "na": false, "evidence": "Sections are project-shaped but build/test/lint are TODO-by-stack placeholders, not real commands (generic stack).", "why": "Value comes from project-specific facts: exact commands, real paths, conventions.", "consequence": "Placeholder commands force trial-and-error and slow every task.", "fixable_by": "partial", "fix_ref": "/agent-ready fix agent_instructions_context", "effort": "Med" },
+        "instruction_conciseness": { "score": 100, "weight": 20, "layer": "portable", "na": false, "evidence": "instruction_audit.py: 63 lines, ~583 tokens, 0 boilerplate phrases, well under the 300-line limit.", "why": "Focused instruction files keep the model on-signal.", "consequence": "n/a", "fixable_by": "partial", "fix_ref": "", "effort": "Low" },
+        "hierarchical_instructions": { "score": 50, "weight": 15, "layer": "portable", "na": false, "evidence": "Single root AGENTS.md; no subpackages exist yet (no code), so a single file is adequate at current scale.", "why": "Scoped per-package files deliver locally-relevant context in large repos.", "consequence": "Once packages appear, a single root file omits local conventions or bloats.", "fixable_by": "skill", "fix_ref": "/agent-ready fix agent_instructions_context", "effort": "Med" },
+        "cross_agent_bridge": { "score": 100, "weight": 15, "layer": "target", "na": false, "evidence": "CLAUDE.md is a symlink -> AGENTS.md; single source of truth, no contradictory copies.", "why": "Bridged vendor files keep all tools on identical guidance from one source.", "consequence": "n/a", "fixable_by": "skill", "fix_ref": "", "effort": "Low" }
+      }
+    },
+    "navigability_code_intelligence": {
+      "weight": 18, "raw_score": 41.25, "weighted_score": 7.4,
+      "subcriteria": {
+        "repo_map_availability": { "score": 50, "weight": 20, "layer": "portable", "na": false, "evidence": "repo_map.py analyzed 0 source files (no code yet); a map is cleanly generatable once code lands.", "why": "Repo maps are the highest-evidence navigation lever (~70% token reduction).", "consequence": "Without a map agents fall back to broad reads and grep.", "fixable_by": "partial", "fix_ref": "/agent-ready fix navigability_code_intelligence", "effort": "Low" },
+        "semantic_nav_amenability": { "score": 25, "weight": 18, "layer": "portable", "na": false, "evidence": "No typed-language config (no tsconfig/pyrightconfig/mypy) and no source to analyze yet.", "why": "LSP semantic nav requires typed/analyzable code and a language server.", "consequence": "Untyped code forces fuzzy text search; refactors miss call sites.", "fixable_by": "manual", "fix_ref": "Add static types + language server once the stack is chosen.", "effort": "High" },
+        "dependency_structure_clarity": { "score": 25, "weight": 17, "layer": "portable", "na": false, "evidence": "No build manifest or dependency declaration yet (generic/undecided stack).", "why": "A derivable dependency graph lets agents reason about blast radius.", "consequence": "Implicit dependencies hide change impact.", "fixable_by": "manual", "fix_ref": "Add a manifest and clear module boundaries as the project grows.", "effort": "High" },
+        "readme_overview": { "score": 25, "weight": 15, "layer": "portable", "na": false, "evidence": "No README.md; AGENTS.md carries an overview placeholder but no dedicated README.", "why": "A root README is the cheapest high-level map of intent and entry points.", "consequence": "Agents misinterpret purpose and entry points.", "fixable_by": "partial", "fix_ref": "/agent-ready fix navigability_code_intelligence", "effort": "Low" },
+        "machine_readable_contracts": { "score": 25, "weight": 15, "layer": "portable", "na": false, "evidence": "No OpenAPI/Protobuf/GraphQL schemas; not yet applicable (no boundaries defined).", "why": "Machine-readable contracts give unambiguous interface specs at boundaries.", "consequence": "Agents infer request/response shapes and get them subtly wrong.", "fixable_by": "manual", "fix_ref": "Author schemas at boundaries when they exist.", "effort": "High" },
+        "file_size_sanity": { "score": 100, "weight": 15, "layer": "portable", "na": false, "evidence": "file_metrics.py: 0 oversized files; 7 source/doc files, 274 LOC total.", "why": "Shorter files are understood better by LLMs.", "consequence": "n/a", "fixable_by": "manual", "fix_ref": "", "effort": "Med" }
+      }
+    },
+    "testing_feedback": {
+      "weight": 16, "raw_score": 5.0, "weighted_score": 0.8,
+      "subcriteria": {
+        "test_suite_present": { "score": 0, "weight": 20, "layer": "portable", "na": false, "evidence": "No test files found (greenfield, no code).", "why": "Test feedback is the single highest-impact comprehension signal for agents.", "consequence": "Agents have no objective signal a change works.", "fixable_by": "manual", "fix_ref": "Write a real test suite as code lands.", "effort": "High" },
+        "test_commands_documented": { "score": 25, "weight": 20, "layer": "portable", "na": false, "evidence": "test_commands.py: no real command; AGENTS.md has TODO-by-stack placeholders only.", "why": "Tests only help if the agent can find and run them.", "consequence": "Agents skip verification or invent wrong invocations.", "fixable_by": "skill", "fix_ref": "/agent-ready fix testing_feedback", "effort": "Low" },
+        "fast_feedback_loop": { "score": 0, "weight": 15, "layer": "portable", "na": false, "evidence": "No fast-subset/watch convention documented.", "why": "A fast subset enables seconds-not-minutes iteration.", "consequence": "Slow loops discourage verification.", "fixable_by": "partial", "fix_ref": "/agent-ready fix testing_feedback", "effort": "Med" },
+        "feedback_quality": { "score": 0, "weight": 25, "layer": "portable", "na": false, "evidence": "No type-checker config and no tests (coverage_signals.py: 0 files).", "why": "Descriptive assertions + a type-checker turn failures into actionable signals.", "consequence": "Opaque failures; agents thrash diagnosing.", "fixable_by": "partial", "fix_ref": "/agent-ready fix testing_feedback", "effort": "Med" },
+        "coverage_reasonable": { "score": 0, "weight": 20, "layer": "portable", "na": false, "evidence": "No coverage config or tests.", "why": "Coverage makes test feedback trustworthy.", "consequence": "Green suite gives false confidence.", "fixable_by": "partial", "fix_ref": "/agent-ready fix testing_feedback", "effort": "Med" }
+      }
+    },
+    "cicd_automation_governance": {
+      "weight": 14, "raw_score": 36.25, "weighted_score": 5.1,
+      "subcriteria": {
+        "ci_runs_tests_lint": { "score": 50, "weight": 30, "layer": "portable", "na": false, "evidence": ".github/workflows/ci.yml present with install/lint/test jobs, but steps are echo placeholders (TODO-by-stack).", "why": "CI is the automated trusted feedback gate.", "consequence": "Broken/unlinted changes merge undetected.", "fixable_by": "skill", "fix_ref": "/agent-ready fix cicd_automation_governance", "effort": "Low" },
+        "lint_format_automated": { "score": 25, "weight": 25, "layer": "portable", "na": false, "evidence": "No stack linter/formatter config (ruff/eslint/prettier); only generic pre-commit hooks present.", "why": "Configured lint/format enforces conventions mechanically.", "consequence": "Inconsistent style triggers review churn.", "fixable_by": "skill", "fix_ref": "/agent-ready fix cicd_automation_governance", "effort": "Low" },
+        "pre_commit_hooks": { "score": 75, "weight": 20, "layer": "portable", "na": false, "evidence": ".pre-commit-config.yaml present: trailing-whitespace, end-of-file-fixer, check-yaml, check-added-large-files, detect-secrets; stack hooks are TODO.", "why": "Pre-commit hooks shift checks left to commit time.", "consequence": "Preventable issues reach CI/remote.", "fixable_by": "skill", "fix_ref": "/agent-ready fix cicd_automation_governance", "effort": "Low" },
+        "governance": { "score": 0, "weight": 25, "layer": "portable", "na": false, "evidence": "No CODEOWNERS, no Dependabot/Renovate config.", "why": "CODEOWNERS + dependency automation keep an agent-active repo healthy.", "consequence": "PRs lack reviewers; dependencies rot.", "fixable_by": "skill", "fix_ref": "/agent-ready fix cicd_automation_governance", "effort": "Low" }
+      }
+    },
+    "agent_tooling_capabilities": {
+      "weight": 12, "raw_score": 0.0, "weighted_score": 0.0,
+      "subcriteria": {
+        "standard_skills": { "score": 0, "weight": 30, "layer": "portable", "na": false, "evidence": "No SKILL.md in the project (only host .claude/settings.local.json).", "why": "Agent Skills package reusable, portable capabilities.", "consequence": "Workflows live in ad-hoc prompts that don't transfer.", "fixable_by": "partial", "fix_ref": "/agent-ready fix agent_tooling_capabilities", "effort": "Med" },
+        "bundled_helper_scripts": { "score": 0, "weight": 15, "layer": "portable", "na": false, "evidence": "No skills, hence no bundled scripts/ dir.", "why": "Bundled scripts keep deterministic logic out of the context window.", "consequence": "Deterministic ops re-derived as model reasoning.", "fixable_by": "partial", "fix_ref": "/agent-ready fix agent_tooling_capabilities", "effort": "Med" },
+        "mcp_declaration": { "score": 0, "weight": 25, "layer": "portable", "na": false, "evidence": "No .mcp.json or vendor MCP config committed.", "why": "A committed MCP config declares expected tools reproducibly.", "consequence": "Each user wires servers manually and inconsistently.", "fixable_by": "skill", "fix_ref": "/agent-ready fix agent_tooling_capabilities", "effort": "Low" },
+        "nav_comprehension_mcp_servers": { "score": 0, "weight": 20, "layer": "portable", "na": false, "evidence": "No Serena/Sourcegraph/Context7 wired up.", "why": "Nav/comprehension MCP servers give exact symbol/reference capability.", "consequence": "Agents rely on fuzzy text search.", "fixable_by": "manual", "fix_ref": "Register Serena once code exists.", "effort": "Med" },
+        "custom_commands": { "score": 0, "weight": 10, "layer": "target", "na": false, "evidence": "No .claude/commands/ directory.", "why": "Vendor commands capture repeatable per-agent workflows (legacy-positive).", "consequence": "Recurring workflows retyped; weakest tooling signal.", "fixable_by": "partial", "fix_ref": "/agent-ready fix agent_tooling_capabilities", "effort": "Low" }
+      }
+    },
+    "security_sandbox": {
+      "weight": 12, "raw_score": 51.25, "weighted_score": 6.2,
+      "subcriteria": {
+        "committed_isolation_config": { "score": 0, "weight": 20, "layer": "portable", "na": false, "evidence": "No .devcontainer/ or other committed isolation config.", "why": "True isolation is the only reliable boundary for autonomous execution.", "consequence": "Compromised code can exfiltrate secrets / reach network.", "fixable_by": "partial", "fix_ref": "/agent-ready fix security_sandbox", "effort": "Med" },
+        "documented_execution_policy": { "score": 100, "weight": 15, "layer": "portable", "na": false, "evidence": "docs/agent-execution.md present: vendor-neutral sandbox options (LINCE/devcontainer/OS-sandbox/hosted) + safe-to-run command list; AGENTS.md links it.", "why": "A documented policy is how non-detectable sandboxes earn credit.", "consequence": "n/a", "fixable_by": "skill", "fix_ref": "", "effort": "Low" },
+        "agent_permission_policy": { "score": 25, "weight": 15, "layer": "target", "na": false, "evidence": ".claude/settings.local.json exists (host-generated) but is not a deliberate restrictive deny policy.", "why": "A restrictive permission policy constrains unprompted agent actions.", "consequence": "Permissive/absent policy lets agents run arbitrary commands.", "fixable_by": "manual", "fix_ref": "Author restrictive deny rules per threat model.", "effort": "Med" },
+        "secret_hygiene": { "score": 75, "weight": 25, "layer": "portable", "na": false, "evidence": "secret_hygiene.py: .gitignore 100% secret coverage, .env.example present with no real values, 0 committed secrets; detect-secrets in pre-commit. Missing CI secret scanning + push protection.", "why": "AI-assisted commits leak secrets at ~2x baseline.", "consequence": "A leaked credential is immediately exploitable.", "fixable_by": "partial", "fix_ref": "/agent-ready fix security_sandbox", "effort": "Med" },
+        "supply_chain_pinning": { "score": 25, "weight": 15, "layer": "portable", "na": false, "evidence": "lockfile_check.py: no lockfiles (no deps yet), no Dependabot/Renovate.", "why": "Committed lockfiles pin the dependency surface.", "consequence": "Non-reproducible builds; silent vulnerable upgrades.", "fixable_by": "partial", "fix_ref": "/agent-ready fix security_sandbox", "effort": "Low" },
+        "injection_hygiene": { "score": 100, "weight": 10, "layer": "portable", "na": false, "evidence": "Instructions live only in trusted AGENTS.md + bridge; no instruction-like content in other agent-read docs.", "why": "Instructions must live only in trusted files.", "consequence": "n/a", "fixable_by": "manual", "fix_ref": "", "effort": "Med" }
+      }
+    },
+    "spec_driven_workflow_docs": {
+      "weight": 10, "raw_score": 33.75, "weighted_score": 3.4,
+      "subcriteria": {
+        "spec_tasks_dir": { "score": 50, "weight": 25, "layer": "portable", "na": false, "evidence": "specs/ exists with TEMPLATE.md; no real specs yet.", "why": "A specs dir gives agents an authoritative statement of what to build.", "consequence": "Agents infer intent and drift from requirements.", "fixable_by": "skill", "fix_ref": "/agent-ready fix spec_driven_workflow_docs", "effort": "Low" },
+        "acceptance_criteria": { "score": 75, "weight": 20, "layer": "portable", "na": false, "evidence": "specs/TEMPLATE.md includes an acceptance-criteria checklist section.", "why": "Acceptance criteria give a verifiable definition of done.", "consequence": "'Done' is subjective; agents stop early or gold-plate.", "fixable_by": "partial", "fix_ref": "/agent-ready fix spec_driven_workflow_docs", "effort": "Med" },
+        "issue_pr_templates": { "score": 0, "weight": 15, "layer": "portable", "na": false, "evidence": "No .github/ISSUE_TEMPLATE/ or pull_request_template.", "why": "Templates standardize the context provided with each unit of work.", "consequence": "Issues/PRs arrive with inconsistent context.", "fixable_by": "skill", "fix_ref": "/agent-ready fix spec_driven_workflow_docs", "effort": "Low" },
+        "adr_decisions": { "score": 0, "weight": 15, "layer": "portable", "na": false, "evidence": "No docs/adr/ or decision log.", "why": "ADRs preserve the why behind design choices.", "consequence": "Agents reverse intentional decisions.", "fixable_by": "partial", "fix_ref": "/agent-ready fix spec_driven_workflow_docs", "effort": "Med" },
+        "docs_comprehension_signals": { "score": 25, "weight": 25, "layer": "portable", "na": false, "evidence": "docs/ present (agent-execution) but no ARCHITECTURE doc or CHANGELOG; no code to annotate yet (coverage_signals.py: 0 files).", "why": "Architecture doc + type/docstring coverage aid comprehension.", "consequence": "Agents reverse-engineer structure from raw code.", "fixable_by": "partial", "fix_ref": "/agent-ready fix spec_driven_workflow_docs", "effort": "Med" }
+      }
+    }
+  },
+  "script_signals": {
+    "available": true,
+    "repo_map": { "files_analyzed": 0 },
+    "file_metrics": { "total_source_files": 7, "total_loc": 274, "oversized_file_count": 0 },
+    "coverage_signals": { "files_analyzed": 0 },
+    "secret_hygiene": { "gitignore_coverage_pct": 100.0, "env_example_present": true, "committed_secret_count": 0 },
+    "lockfile_check": { "lockfile_count": 0, "strong_lockfile_committed": false },
+    "test_commands": { "has_test_command": false, "has_lint_command": false },
+    "instruction_audit": { "file_count": 2, "any_over_conciseness_limit": false, "total_boilerplate_phrases": 0, "note": "AGENTS.md/CLAUDE.md duplication pair is the intended symlink bridge, not drift" }
+  },
+  "top_improvements": [
+    { "dimension": "testing_feedback", "potential_gain": 15.2, "effort": "High", "description": "No tests yet — add a suite + document run commands as code lands (high impact, expected-empty for greenfield)." },
+    { "dimension": "agent_tooling_capabilities", "potential_gain": 12.0, "effort": "Low", "description": "Add a committed .mcp.json and wire Serena once code exists; consider project Skills." },
+    { "dimension": "navigability_code_intelligence", "potential_gain": 10.6, "effort": "Low", "description": "Add a README and pick a typed stack to unlock repo-map + semantic nav." },
+    { "dimension": "cicd_automation_governance", "potential_gain": 8.9, "effort": "Low", "description": "Replace CI placeholders with real test/lint commands; add CODEOWNERS + Dependabot." },
+    { "dimension": "spec_driven_workflow_docs", "potential_gain": 6.6, "effort": "Low", "description": "Add issue/PR templates and an ADR dir; write real specs from the template." }
+  ]
+}

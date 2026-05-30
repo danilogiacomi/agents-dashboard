@@ -1,0 +1,41 @@
+# --- Secrets & credentials (do not commit) ---
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+id_rsa
+id_rsa.*
+*credentials*
+*.p12
+.secrets.baseline.local
+
+# --- OS / editor ---
+.DS_Store
+Thumbs.db
+*.swp
+*~
+.idea/
+.vscode/
+
+# --- Logs & temp ---
+*.log
+tmp/
+.cache/
+
+# --- Brainstorming companion (local mockups) ---
+.superpowers/
+
+# --- Dependencies & build output (TODO-by-stack: keep what applies) ---
+# Node
+node_modules/
+dist/
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+build/
+*.egg-info/
+# Go
+# (Go has no vendored output to ignore by default)

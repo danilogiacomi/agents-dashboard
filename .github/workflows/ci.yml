@@ -1,0 +1,35 @@
+name: CI
+
+# Runs test + lint on every push and pull request.
+# TODO-by-stack: uncomment/replace the setup + commands for your ecosystem.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test-and-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # --- Toolchain setup (pick one; TODO-by-stack) ---
+      # - uses: actions/setup-node@v4
+      #   with: { node-version: '20', cache: 'npm' }
+      # - uses: actions/setup-python@v5
+      #   with: { python-version: '3.12' }
+      # - uses: actions/setup-go@v5
+      #   with: { go-version: '1.22' }
+
+      - name: Install dependencies
+        run: |
+          echo "TODO-by-stack: e.g. npm ci  /  uv sync  /  go mod download"
+
+      - name: Lint
+        run: |
+          echo "TODO-by-stack: e.g. npm run lint  /  ruff check .  /  golangci-lint run"
+
+      - name: Test
+        run: |
+          echo "TODO-by-stack: e.g. npm test  /  pytest  /  go test ./..."

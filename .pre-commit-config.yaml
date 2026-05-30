@@ -1,0 +1,31 @@
+# Pre-commit hooks. Install with: pip install pre-commit && pre-commit install
+# Docs: https://pre-commit.com
+#
+# Generic baseline + a secrets guard. Add ecosystem-specific hooks
+# (ruff for Python, eslint/prettier for Node, gofmt for Go) once the stack lands.
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-added-large-files
+      - id: check-merge-conflict
+
+  - repo: https://github.com/Yelp/detect-secrets
+    rev: v1.5.0
+    hooks:
+      - id: detect-secrets
+        # First run: detect-secrets scan > .secrets.baseline
+        args: ['--baseline', '.secrets.baseline']
+
+  # --- TODO-by-stack: add when the toolchain exists ---
+  # Python:
+  # - repo: https://github.com/astral-sh/ruff-pre-commit
+  #   rev: v0.6.0
+  #   hooks:
+  #     - id: ruff
+  #     - id: ruff-format
+  # Node: configure eslint/prettier via a local hook or mirror repo.
