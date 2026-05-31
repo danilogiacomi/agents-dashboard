@@ -24,3 +24,4 @@ const server = Bun.serve({
 });
 
 console.log(`Agents Dashboard running at http://localhost:${server.port}`);
+console.log("⭐ Enjoying it? Star the project: https://github.com/danilogiacomi/agents-dashboard");

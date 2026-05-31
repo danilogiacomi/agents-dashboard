@@ -94,10 +94,10 @@ footprint, read from the local agent logs the dashboard renders.
 
 | Metric | Value |
 |---|---|
-| **Total tokens** | **287.1M** |
-| Token breakdown | 1.5M output · 135.6K input · 6.6M cache-write · 278.9M cache-read |
-| Agent time | ~4h 18m active (21h 2m wall-clock) |
-| Turns | 1,079 assistant turns · 501 tool calls |
+| **Total tokens** | **289.9M** |
+| Token breakdown | 1.5M output · 135.8K input · 6.6M cache-write · 281.6M cache-read |
+| Agent time | ~4h 20m active (21h 3m wall-clock) |
+| Turns | 1,090 assistant turns · 506 tool calls |
 | Agents / models | Claude Code — claude-opus-4-8 |
 | As of | 2026-05-30 → 2026-05-31 |
 
