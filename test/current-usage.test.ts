@@ -69,7 +69,15 @@ describe("deriveClaudeUsage", () => {
 
   test("handles a zero historical peak without dividing by zero", () => {
     const u = deriveClaudeUsage({
-      blocks: [{ id: "a", isActive: true, isGap: false, endTime: "2026-05-31T13:00:00.000Z", totalTokens: 0 }],
+      blocks: [
+        {
+          id: "a",
+          isActive: true,
+          isGap: false,
+          endTime: "2026-05-31T13:00:00.000Z",
+          totalTokens: 0,
+        },
+      ],
     });
     expect(u.windows[0]?.usedPercent).toBe(0);
   });

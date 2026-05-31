@@ -18,9 +18,16 @@ function codexWindow(w: CodexRateWindow): UsageWindow {
 
 export function deriveCodexUsage(rl: CodexRateLimits | null): CurrentUsage {
   if (!rl || (!rl.primary && !rl.secondary)) {
-    return { tool: "codex", available: false, windows: [], note: "no rate-limit data in the latest Codex session log" };
+    return {
+      tool: "codex",
+      available: false,
+      windows: [],
+      note: "no rate-limit data in the latest Codex session log",
+    };
   }
-  const windows = [rl.secondary, rl.primary].filter((w): w is CodexRateWindow => w != null).map(codexWindow);
+  const windows = [rl.secondary, rl.primary]
+    .filter((w): w is CodexRateWindow => w != null)
+    .map(codexWindow);
   return { tool: "codex", available: true, windows };
 }
 
@@ -42,11 +49,16 @@ function humanTokens(n: number): string {
 
 export function deriveClaudeUsage(raw: unknown): CurrentUsage {
   const blocks: ClaudeBlock[] = Array.isArray((raw as { blocks?: unknown })?.blocks)
-    ? ((raw as { blocks: ClaudeBlock[] }).blocks)
+    ? (raw as { blocks: ClaudeBlock[] }).blocks
     : [];
   const active = blocks.find((b) => b.isActive && !b.isGap);
   if (!active || !active.endTime) {
-    return { tool: "claude", available: true, windows: [], note: "no active session in the last 5 hours" };
+    return {
+      tool: "claude",
+      available: true,
+      windows: [],
+      note: "no active session in the last 5 hours",
+    };
   }
   const peak = Math.max(0, ...blocks.filter((b) => !b.isGap).map((b) => b.totalTokens ?? 0));
   const used = active.totalTokens ?? 0;
