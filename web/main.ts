@@ -1,11 +1,13 @@
 import { Chart, registerables } from "chart.js";
 import {
+  type CurrentUsage,
   type DashboardData,
   SUPPORTED_TOOLS,
   type SessionRow,
   type TemplateId,
+  type UsageWindow,
 } from "../src/types";
-import { aggregateByProject, projectLabeler, shortModel } from "./format";
+import { aggregateByProject, fmtCountdown, fmtPercent, projectLabeler, shortModel } from "./format";
 
 Chart.register(...registerables);
 
@@ -39,6 +41,8 @@ const kpisEl = $<HTMLElement>("kpis");
 const tableWrap = $<HTMLDivElement>("tableWrap");
 const groupChk = $<HTMLInputElement>("groupProj");
 const mainEl = $<HTMLElement>("main");
+const usagePanel = $<HTMLElement>("usagePanel");
+const usageBody = $<HTMLDivElement>("usageBody");
 
 let selectedTemplate: TemplateId = "last-7-days";
 // Monotonic request id: a query is only rendered if it is still the latest one,
@@ -127,6 +131,7 @@ function esc(s: string): string {
 }
 
 async function run(): Promise<void> {
+  void loadCurrentUsage();
   const params = new URLSearchParams({ tool: toolSel.value, template: selectedTemplate });
   if (selectedTemplate === "custom") {
     if (!sinceEl.value || !untilEl.value) {
@@ -294,6 +299,57 @@ function renderTable(): void {
     .join("");
   tableWrap.innerHTML = `${head}${body}</tbody></table>`;
 }
+
+let usageWindows: UsageWindow[] = [];
+
+function renderCurrentUsage(u: CurrentUsage): void {
+  usageWindows = u.windows;
+  usagePanel.hidden = false;
+  const rows = u.windows
+    .map((w, i) => {
+      const est = w.basis === "estimate" ? `<span class="usage-est">estimate</span>` : "";
+      const detail = w.detail ? ` · ${w.detail}` : "";
+      const pct = Math.max(0, Math.min(100, w.usedPercent));
+      return `
+      <div class="usage-win">
+        <div class="usage-head"><span>${w.label}${est}${detail}</span>
+          <span class="pct">${fmtPercent(w.usedPercent)}</span></div>
+        <div class="usage-bar"><span style="width:${pct}%"></span></div>
+        <div class="usage-reset" data-reset="${i}">resets in …</div>
+      </div>`;
+    })
+    .join("");
+  // No windows (unavailable agent, or Claude with no active session) → show the note only.
+  const note = u.note ? `<p class="usage-note">${u.note}</p>` : "";
+  usageBody.innerHTML = u.windows.length
+    ? rows + note
+    : note || `<p class="usage-note">Current usage not available.</p>`;
+  tickCountdowns();
+}
+
+function tickCountdowns(): void {
+  const nowMs = Date.now();
+  for (const el of Array.from(usageBody.querySelectorAll<HTMLElement>("[data-reset]"))) {
+    const w = usageWindows[Number(el.dataset.reset)];
+    if (w) el.textContent = `resets in ${fmtCountdown(new Date(w.resetsAt).getTime() - nowMs)}`;
+  }
+}
+
+async function loadCurrentUsage(): Promise<void> {
+  try {
+    const res = await fetch(`/api/current-usage?tool=${encodeURIComponent(toolSel.value)}`);
+    if (!res.ok) {
+      usagePanel.hidden = true;
+      return;
+    }
+    renderCurrentUsage(await res.json());
+  } catch {
+    usagePanel.hidden = true;
+  }
+}
+
+setInterval(tickCountdowns, 1000);
+setInterval(() => void loadCurrentUsage(), 60_000);
 
 initControls();
 // Auto-run on first load with the default tool (claude) and range (last 7 days).
