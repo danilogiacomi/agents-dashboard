@@ -1,6 +1,12 @@
 import { describe, expect, test } from "bun:test";
 import type { SessionRow } from "../src/types";
-import { aggregateByProject, projectLabeler, shortModel } from "../web/format";
+import {
+  aggregateByProject,
+  fmtCountdown,
+  fmtPercent,
+  projectLabeler,
+  shortModel,
+} from "../web/format";
 
 function session(over: Partial<SessionRow>): SessionRow {
   return {
@@ -90,5 +96,26 @@ describe("aggregateByProject", () => {
 
   test("empty input yields no rows", () => {
     expect(aggregateByProject([])).toEqual([]);
+  });
+});
+
+describe("fmtCountdown", () => {
+  test("hours and minutes", () => {
+    expect(fmtCountdown(2 * 3600_000 + 5 * 60_000)).toBe("2h 5m");
+  });
+  test("minutes only", () => {
+    expect(fmtCountdown(45 * 60_000)).toBe("45m");
+  });
+  test("seconds under a minute", () => {
+    expect(fmtCountdown(30_000)).toBe("30s");
+  });
+  test("clamps past-due to now", () => {
+    expect(fmtCountdown(-5)).toBe("now");
+  });
+});
+
+describe("fmtPercent", () => {
+  test("rounds to a whole percent", () => {
+    expect(fmtPercent(49.6)).toBe("50%");
   });
 });

@@ -55,6 +55,20 @@
       .panel > summary::before { content:"\25B8"; font-size:10px; }
       .panel[open] > summary::before { content:"\25BE"; }
       .panel[open] > summary { margin-bottom:10px; }
+      #usagePanel[hidden] { display:none; }
+      .usage-win { margin:12px 0; }
+      .usage-win:first-child { margin-top:4px; }
+      .usage-head { display:flex; justify-content:space-between; align-items:baseline;
+        font-size:12px; color:var(--muted); margin-bottom:5px; }
+      .usage-head .pct { color:var(--fg); font-variant-numeric:tabular-nums; }
+      .usage-bar { height:8px; background:#11141a; border:1px solid var(--line);
+        border-radius:999px; overflow:hidden; }
+      .usage-bar > span { display:block; height:100%; background:#4a86e8; }
+      .usage-reset { font-size:11px; color:var(--muted); margin-top:4px; }
+      .usage-note { color:var(--muted); font-size:11px; margin-top:8px; }
+      .usage-est { font-size:10px; text-transform:uppercase; letter-spacing:.04em;
+        color:var(--muted); border:1px solid var(--line); border-radius:4px;
+        padding:0 4px; margin-left:6px; }
     </style>
   </head>
   <body>
@@ -74,6 +88,10 @@
         <div class="panel"><h3>Cost &amp; tokens over time</h3><canvas id="timeChart"></canvas></div>
         <div class="panel"><h3>By model</h3><canvas id="modelChart"></canvas></div>
       </div>
+      <section class="panel" id="usagePanel" style="margin-bottom:10px" hidden>
+        <h3>Current usage</h3>
+        <div id="usageBody"></div>
+      </section>
       <div class="panel" style="margin-bottom:10px">
         <h3>Sessions
           <label class="grp"><input type="checkbox" id="groupProj" checked /> group by project</label>

@@ -1,4 +1,4 @@
-import type { CcusageDailyReport, CcusageSessionReport } from "../../src/types";
+import type { CcusageDailyReport, CcusageSessionReport, CodexRateLimits } from "../../src/types";
 
 export const sampleSession: CcusageSessionReport = {
   sessions: [
@@ -133,4 +133,37 @@ export const codexDailyRaw: unknown = {
     },
   ],
   totals: {},
+};
+
+export const codexRateLimitsSample: CodexRateLimits = {
+  // 5-hour window, 62% used, resets at 2026-05-31T14:00:00Z (1780236000)
+  secondary: { used_percent: 62, window_minutes: 300, resets_at: 1780236000 },
+  // weekly window, 31% used, resets at a later time (1780738238)
+  primary: { used_percent: 31, window_minutes: 10080, resets_at: 1780738238 },
+};
+
+// `ccusage blocks --json`: one historical block (bigger) + one active block.
+export const claudeBlocksRaw = {
+  blocks: [
+    {
+      id: "2026-05-30T08:00:00.000Z",
+      isActive: false,
+      isGap: false,
+      endTime: "2026-05-30T13:00:00.000Z",
+      totalTokens: 40000000,
+    },
+    {
+      id: "2026-05-31T08:00:00.000Z",
+      isActive: true,
+      isGap: false,
+      endTime: "2026-05-31T13:00:00.000Z",
+      totalTokens: 20000000,
+    },
+  ],
+};
+
+export const claudeBlocksNoActive = {
+  blocks: [
+    { id: "g", isActive: false, isGap: true, endTime: "2026-05-30T13:00:00.000Z", totalTokens: 0 },
+  ],
 };
