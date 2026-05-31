@@ -20,13 +20,17 @@ export async function readLatestCodexRateLimits(): Promise<CodexRateLimits | nul
   }
   if (!newest) return null;
 
-  const text = await Bun.file(newest.path).text();
+  return parseRateLimitsFromJsonl(await Bun.file(newest.path).text());
+}
+
+// Return the LAST rate_limits snapshot in a rollout JSONL body, or null if none.
+// `rate_limits` lives on the `token_count` event payload; tolerate both the current
+// shape (payload.rate_limits) and the older nested one (payload.info.rate_limits).
+export function parseRateLimitsFromJsonl(text: string): CodexRateLimits | null {
   let found: CodexRateLimits | null = null;
   for (const line of text.split("\n")) {
     if (!line.includes("rate_limits")) continue;
     try {
-      // `rate_limits` lives on the `token_count` event payload; tolerate both the
-      // current shape (payload.rate_limits) and the older nested one (payload.info.rate_limits).
       const obj = JSON.parse(line) as {
         payload?: { rate_limits?: CodexRateLimits; info?: { rate_limits?: CodexRateLimits } };
       };

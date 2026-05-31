@@ -313,11 +313,11 @@ function renderCurrentUsage(u: CurrentUsage): void {
   const rows = u.windows
     .map((w, i) => {
       const est = w.basis === "estimate" ? `<span class="usage-est">estimate</span>` : "";
-      const detail = w.detail ? ` · ${w.detail}` : "";
+      const detail = w.detail ? ` · ${esc(w.detail)}` : "";
       const pct = Math.max(0, Math.min(100, w.usedPercent));
       return `
       <div class="usage-win">
-        <div class="usage-head"><span>${w.label}${est}${detail}</span>
+        <div class="usage-head"><span>${esc(w.label)}${est}${detail}</span>
           <span class="pct">${fmtPercent(w.usedPercent)}</span></div>
         <div class="usage-bar"><span style="width:${pct}%"></span></div>
         <div class="usage-reset" data-reset="${i}">resets in …</div>
@@ -325,7 +325,7 @@ function renderCurrentUsage(u: CurrentUsage): void {
     })
     .join("");
   // No windows (unavailable agent, or Claude with no active session) → show the note only.
-  const note = u.note ? `<p class="usage-note">${u.note}</p>` : "";
+  const note = u.note ? `<p class="usage-note">${esc(u.note)}</p>` : "";
   usageBody.innerHTML = u.windows.length
     ? rows + note
     : note || `<p class="usage-note">Current usage not available.</p>`;
@@ -340,16 +340,24 @@ function tickCountdowns(): void {
   }
 }
 
+// Monotonic guard so a slow response for a previously-selected tool can't render
+// into the panel after the user has switched tools (mirrors run()'s runSeq).
+let usageSeq = 0;
+
 async function loadCurrentUsage(): Promise<void> {
+  const seq = ++usageSeq;
   try {
     const res = await fetch(`/api/current-usage?tool=${encodeURIComponent(toolSel.value)}`);
+    if (seq !== usageSeq) return; // superseded by a newer selection
     if (!res.ok) {
       usagePanel.hidden = true;
       return;
     }
-    renderCurrentUsage(await res.json());
+    const body = (await res.json()) as CurrentUsage;
+    if (seq !== usageSeq) return; // superseded while parsing
+    renderCurrentUsage(body);
   } catch {
-    usagePanel.hidden = true;
+    if (seq === usageSeq) usagePanel.hidden = true;
   }
 }
 
