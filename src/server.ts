@@ -18,6 +18,7 @@ const server = Bun.serve({
         handleCurrentUsage(req, {
           runBlocks: (tool) => runCcusageBlocks(tool),
           readCodexRateLimits: readLatestCodexRateLimits,
+          isClaudeCodeShell: () => process.env.CLAUDECODE === "1",
         }),
     },
   },

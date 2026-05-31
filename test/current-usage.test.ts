@@ -13,6 +13,7 @@ function cuDeps(over: Partial<CurrentUsageDeps> = {}): CurrentUsageDeps {
   return {
     runBlocks: async () => claudeBlocksRaw,
     readCodexRateLimits: async () => codexRateLimitsSample,
+    isClaudeCodeShell: () => true,
     ...over,
   };
 }
@@ -22,6 +23,12 @@ describe("getCurrentUsage", () => {
     const u = await getCurrentUsage("claude", cuDeps());
     expect(u.tool).toBe("claude");
     expect(u.windows[0]?.basis).toBe("estimate");
+  });
+  test("claude reports unavailable outside Claude Code", async () => {
+    const u = await getCurrentUsage("claude", cuDeps({ isClaudeCodeShell: () => false }));
+    expect(u.available).toBe(false);
+    expect(u.windows).toHaveLength(0);
+    expect(u.note).toContain("Claude Code");
   });
   test("codex routes through rate limits", async () => {
     const u = await getCurrentUsage("codex", cuDeps());

@@ -308,6 +308,10 @@ function renderTable(): void {
 let usageWindows: UsageWindow[] = [];
 
 function renderCurrentUsage(u: CurrentUsage): void {
+  if (u.tool === "claude" && !u.available) {
+    usagePanel.hidden = true;
+    return;
+  }
   usageWindows = u.windows;
   usagePanel.hidden = false;
   const rows = u.windows

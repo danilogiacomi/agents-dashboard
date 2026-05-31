@@ -3,10 +3,21 @@ import type { CodexRateLimits, CodexRateWindow, CurrentUsage, UsageWindow } from
 export interface CurrentUsageDeps {
   runBlocks: (tool: string) => Promise<unknown>;
   readCodexRateLimits: () => Promise<CodexRateLimits | null>;
+  isClaudeCodeShell: () => boolean;
 }
 
 export async function getCurrentUsage(tool: string, deps: CurrentUsageDeps): Promise<CurrentUsage> {
-  if (tool === "claude") return deriveClaudeUsage(await deps.runBlocks("claude"));
+  if (tool === "claude") {
+    if (!deps.isClaudeCodeShell()) {
+      return {
+        tool,
+        available: false,
+        windows: [],
+        note: "Claude current usage is only available when this dashboard is launched from Claude Code.",
+      };
+    }
+    return deriveClaudeUsage(await deps.runBlocks("claude"));
+  }
   if (tool === "codex") return deriveCodexUsage(await deps.readCodexRateLimits());
   return {
     tool,
