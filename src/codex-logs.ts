@@ -25,8 +25,12 @@ export async function readLatestCodexRateLimits(): Promise<CodexRateLimits | nul
   for (const line of text.split("\n")) {
     if (!line.includes("rate_limits")) continue;
     try {
-      const obj = JSON.parse(line) as { payload?: { info?: { rate_limits?: CodexRateLimits } } };
-      const rl = obj.payload?.info?.rate_limits;
+      // `rate_limits` lives on the `token_count` event payload; tolerate both the
+      // current shape (payload.rate_limits) and the older nested one (payload.info.rate_limits).
+      const obj = JSON.parse(line) as {
+        payload?: { rate_limits?: CodexRateLimits; info?: { rate_limits?: CodexRateLimits } };
+      };
+      const rl = obj.payload?.rate_limits ?? obj.payload?.info?.rate_limits;
       if (rl) found = rl; // keep the last one
     } catch {
       // ignore malformed lines
