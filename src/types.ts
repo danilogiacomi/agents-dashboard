@@ -125,3 +125,29 @@ export interface DashboardData {
   tokenSplit: TokenSplit;
   sessions: SessionRow[];
 }
+
+// --- current usage (rate-limit snapshot) ---
+export interface UsageWindow {
+  label: string; // "5-hour session", "Weekly", or "{n}-hour"/"{n}-day"
+  usedPercent: number; // 0–100
+  resetsAt: string; // ISO 8601, absolute
+  basis: "exact" | "estimate";
+  detail?: string; // e.g. "21.5M tokens"
+}
+export interface CurrentUsage {
+  tool: string;
+  available: boolean;
+  windows: UsageWindow[];
+  note?: string;
+}
+
+// Codex rollout `rate_limits` shape (subset we consume).
+export interface CodexRateWindow {
+  used_percent: number;
+  window_minutes: number;
+  resets_at: number; // unix seconds
+}
+export interface CodexRateLimits {
+  primary: CodexRateWindow | null;
+  secondary: CodexRateWindow | null;
+}
