@@ -1,6 +1,12 @@
 import { describe, expect, test } from "bun:test";
 import type { SessionRow } from "../src/types";
-import { aggregateByProject, fmtCountdown, fmtPercent, projectLabeler, shortModel } from "../web/format";
+import {
+  aggregateByProject,
+  fmtCountdown,
+  fmtPercent,
+  projectLabeler,
+  shortModel,
+} from "../web/format";
 
 function session(over: Partial<SessionRow>): SessionRow {
   return {
