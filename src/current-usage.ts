@@ -1,5 +1,16 @@
 import type { CodexRateLimits, CodexRateWindow, CurrentUsage, UsageWindow } from "./types";
 
+export interface CurrentUsageDeps {
+  runBlocks: (tool: string) => Promise<unknown>;
+  readCodexRateLimits: () => Promise<CodexRateLimits | null>;
+}
+
+export async function getCurrentUsage(tool: string, deps: CurrentUsageDeps): Promise<CurrentUsage> {
+  if (tool === "claude") return deriveClaudeUsage(await deps.runBlocks("claude"));
+  if (tool === "codex") return deriveCodexUsage(await deps.readCodexRateLimits());
+  return { tool, available: false, windows: [], note: "current usage not available for this agent yet" };
+}
+
 export function labelForWindow(minutes: number): string {
   if (minutes === 300) return "5-hour session";
   if (minutes === 10080) return "Weekly";

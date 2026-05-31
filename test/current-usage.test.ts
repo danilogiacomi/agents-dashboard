@@ -1,6 +1,52 @@
 import { describe, expect, test } from "bun:test";
-import { deriveClaudeUsage, deriveCodexUsage, labelForWindow } from "../src/current-usage";
+import { type CurrentUsageDeps, deriveClaudeUsage, deriveCodexUsage, getCurrentUsage, labelForWindow } from "../src/current-usage";
+import { handleCurrentUsage } from "../src/current-usage-handler";
 import { claudeBlocksNoActive, claudeBlocksRaw, codexRateLimitsSample } from "./fixtures/sample";
+
+function cuDeps(over: Partial<CurrentUsageDeps> = {}): CurrentUsageDeps {
+  return {
+    runBlocks: async () => claudeBlocksRaw,
+    readCodexRateLimits: async () => codexRateLimitsSample,
+    ...over,
+  };
+}
+
+describe("getCurrentUsage", () => {
+  test("claude routes through blocks", async () => {
+    const u = await getCurrentUsage("claude", cuDeps());
+    expect(u.tool).toBe("claude");
+    expect(u.windows[0]?.basis).toBe("estimate");
+  });
+  test("codex routes through rate limits", async () => {
+    const u = await getCurrentUsage("codex", cuDeps());
+    expect(u.tool).toBe("codex");
+    expect(u.windows[0]?.basis).toBe("exact");
+  });
+  test("other tools report unavailable", async () => {
+    const u = await getCurrentUsage("gemini", cuDeps());
+    expect(u.available).toBe(false);
+    expect(u.note).toBeTruthy();
+  });
+});
+
+describe("handleCurrentUsage", () => {
+  test("returns 200 with the snapshot", async () => {
+    const res = await handleCurrentUsage(
+      new Request("http://localhost/api/current-usage?tool=codex"),
+      cuDeps(),
+    );
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body.tool).toBe("codex");
+  });
+  test("rejects an unsupported tool with 400", async () => {
+    const res = await handleCurrentUsage(
+      new Request("http://localhost/api/current-usage?tool=bogus"),
+      cuDeps(),
+    );
+    expect(res.status).toBe(400);
+  });
+});
 
 describe("labelForWindow", () => {
   test("maps the 5-hour window", () => {
