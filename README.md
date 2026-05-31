@@ -19,6 +19,15 @@ Then open <http://localhost:3000>. On a different port:
 PORT=8080 bunx github:danilogiacomi/agents-dashboard
 ```
 
+### Updating
+
+`bunx` caches the GitHub package by commit, so after the first run it may keep serving the
+version you originally pulled. To force the latest from `main`:
+
+```sh
+bunx --force github:danilogiacomi/agents-dashboard
+```
+
 ## Requirements
 
 - [Bun](https://bun.sh) ≥ 1.3 (runs the server and bundles the frontend — no build step).
@@ -94,10 +103,10 @@ footprint, read from the local agent logs the dashboard renders.
 
 | Metric | Value |
 |---|---|
-| **Total tokens** | **295.0M** |
-| Token breakdown | 1.5M output · 136.1K input · 6.6M cache-write · 286.7M cache-read |
-| Agent time | ~4h 22m active (21h 6m wall-clock) |
-| Turns | 1,110 assistant turns · 517 tool calls |
+| **Total tokens** | **299.9M** |
+| Token breakdown | 1.5M output · 136.4K input · 6.6M cache-write · 291.7M cache-read |
+| Agent time | ~4h 25m active (21h 26m wall-clock) |
+| Turns | 1,129 assistant turns · 524 tool calls |
 | Agents / models | Claude Code — claude-opus-4-8 |
 | As of | 2026-05-30 → 2026-05-31 |
 
