@@ -7,10 +7,10 @@
   "author": "Danilo Giacomi",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/OWNER/ccusage-dash.git"
+    "url": "git+https://github.com/danilogiacomi/ccusage-dash.git"
   },
-  "homepage": "https://github.com/OWNER/ccusage-dash#readme",
-  "bugs": "https://github.com/OWNER/ccusage-dash/issues",
+  "homepage": "https://github.com/danilogiacomi/ccusage-dash#readme",
+  "bugs": "https://github.com/danilogiacomi/ccusage-dash/issues",
   "keywords": ["ccusage", "claude-code", "codex", "dashboard", "usage", "bun"],
   "engines": {
     "bun": ">=1.3.0"
