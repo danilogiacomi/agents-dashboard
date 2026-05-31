@@ -1,5 +1,6 @@
 import { describe, expect, test } from "bun:test";
-import { labelForWindow } from "../src/current-usage";
+import { deriveCodexUsage, labelForWindow } from "../src/current-usage";
+import { codexRateLimitsSample } from "./fixtures/sample";
 
 describe("labelForWindow", () => {
   test("maps the 5-hour window", () => {
@@ -13,5 +14,35 @@ describe("labelForWindow", () => {
   });
   test("falls back to hours", () => {
     expect(labelForWindow(180)).toBe("3-hour");
+  });
+});
+
+describe("deriveCodexUsage", () => {
+  test("emits one exact window per present sub-window", () => {
+    const u = deriveCodexUsage(codexRateLimitsSample);
+    expect(u.available).toBe(true);
+    expect(u.windows).toHaveLength(2);
+    const five = u.windows.find((w) => w.label === "5-hour session");
+    expect(five).toBeDefined();
+    expect(five?.usedPercent).toBe(62);
+    expect(five?.basis).toBe("exact");
+    expect(five?.resetsAt).toBe("2026-05-31T14:00:00.000Z");
+    expect(u.windows.some((w) => w.label === "Weekly")).toBe(true);
+  });
+
+  test("skips a null secondary window", () => {
+    const u = deriveCodexUsage({
+      primary: { used_percent: 10, window_minutes: 10080, resets_at: 1780738238 },
+      secondary: null,
+    });
+    expect(u.windows).toHaveLength(1);
+    expect(u.windows[0]?.label).toBe("Weekly");
+  });
+
+  test("reports unavailable when there are no rate limits", () => {
+    const u = deriveCodexUsage(null);
+    expect(u.available).toBe(false);
+    expect(u.windows).toHaveLength(0);
+    expect(u.note).toBeTruthy();
   });
 });
