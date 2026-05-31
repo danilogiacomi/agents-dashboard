@@ -67,6 +67,12 @@ bun run dev        # watch mode, http://localhost:3000
   (see `src/normalize.ts`). codex reports per-model **tokens** but not per-model **cost**, so
   its "By model" chart (which is cost-based) is empty — the sessions table still lists models.
 
+## Agent tooling
+
+Opening this repo in an MCP-capable agent (Claude Code, etc.) picks up `.mcp.json`, which
+declares the [Serena](https://github.com/oraios/serena) semantic code-navigation server. It
+runs via `uvx` (install [uv](https://docs.astral.sh/uv/)); the first launch fetches Serena.
+
 ## Docs
 
 - Architecture: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)
