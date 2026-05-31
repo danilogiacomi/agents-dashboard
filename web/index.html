@@ -17,7 +17,6 @@
       .chip[aria-pressed="true"] { background:var(--accent); border-color:var(--accent); color:#fff; }
       #custom { display:none; gap:6px; align-items:center; }
       #custom.show { display:inline-flex; }
-      button#run { margin-left:auto; cursor:pointer; background:var(--accent); border-color:var(--accent); color:#fff; }
       main { padding:16px; max-width:1200px; margin:0 auto; }
       #status { color:var(--muted); padding:8px 0; min-height:24px; }
       .kpis { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-bottom:14px; }
@@ -42,10 +41,9 @@
         <input type="date" id="since" aria-label="Since" />
         <input type="date" id="until" aria-label="Until" />
       </span>
-      <button id="run">Run</button>
     </header>
     <main>
-      <div id="status">Pick a tool and range, then Run.</div>
+      <div id="status">Loading…</div>
       <section class="kpis" id="kpis" hidden></section>
       <div class="grid">
         <div class="panel"><h3>Cost &amp; tokens over time</h3><canvas id="timeChart"></canvas></div>
