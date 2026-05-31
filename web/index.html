@@ -49,6 +49,12 @@
       .panel h3 .grp { float:right; text-transform:none; letter-spacing:0; font-weight:400;
         color:var(--muted); cursor:pointer; display:inline-flex; align-items:center; gap:5px; }
       .panel h3 .grp input { cursor:pointer; }
+      .panel > summary { font-size:13px; color:var(--muted); text-transform:uppercase; letter-spacing:.04em;
+        cursor:pointer; list-style:none; display:flex; align-items:center; gap:6px; }
+      .panel > summary::-webkit-details-marker { display:none; }
+      .panel > summary::before { content:"\25B8"; font-size:10px; }
+      .panel[open] > summary::before { content:"\25BE"; }
+      .panel[open] > summary { margin-bottom:10px; }
     </style>
   </head>
   <body>
@@ -68,13 +74,16 @@
         <div class="panel"><h3>Cost &amp; tokens over time</h3><canvas id="timeChart"></canvas></div>
         <div class="panel"><h3>By model</h3><canvas id="modelChart"></canvas></div>
       </div>
-      <div class="panel" style="margin-bottom:10px"><h3>Token type split</h3><canvas id="tokenChart"></canvas></div>
-      <div class="panel">
+      <div class="panel" style="margin-bottom:10px">
         <h3>Sessions
           <label class="grp"><input type="checkbox" id="groupProj" checked /> group by project</label>
         </h3>
         <div id="tableWrap"></div>
       </div>
+      <details class="panel" id="tokenPanel">
+        <summary>Token type split</summary>
+        <canvas id="tokenChart"></canvas>
+      </details>
     </main>
     <script type="module" src="./main.ts"></script>
   </body>

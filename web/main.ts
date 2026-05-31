@@ -98,6 +98,11 @@ function initControls(): void {
     groupByProject = groupChk.checked;
     renderTable();
   });
+  // The token-split panel starts collapsed, so its canvas has no size until first
+  // opened — resize the chart on expand so it draws at the correct dimensions.
+  document.getElementById("tokenPanel")?.addEventListener("toggle", (e) => {
+    if ((e.target as HTMLDetailsElement).open) charts.token?.resize();
+  });
 }
 
 function selectTemplate(id: TemplateId): void {
