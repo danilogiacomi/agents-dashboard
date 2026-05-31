@@ -31,6 +31,7 @@ const untilEl = $<HTMLInputElement>("until");
 const statusEl = $<HTMLDivElement>("status");
 const kpisEl = $<HTMLElement>("kpis");
 const tableWrap = $<HTMLDivElement>("tableWrap");
+const mainEl = $<HTMLElement>("main");
 
 let selectedTemplate: TemplateId = "last-7-days";
 // Monotonic request id: a query is only rendered if it is still the latest one,
@@ -96,7 +97,8 @@ async function run(): Promise<void> {
     params.set("until", untilEl.value);
   }
   const seq = ++runSeq;
-  statusEl.textContent = "Running ccusage…";
+  mainEl.classList.add("loading");
+  statusEl.innerHTML = '<span class="spinner"></span>Running ccusage…';
   try {
     const res = await fetch(`/api/usage?${params}`);
     if (seq !== runSeq) return; // a newer request superseded this one
@@ -116,6 +118,10 @@ async function run(): Promise<void> {
     render(body);
   } catch (e) {
     if (seq === runSeq) statusEl.textContent = `Request failed: ${(e as Error).message}`;
+  } finally {
+    // Only the latest request clears the loading state; a superseded one leaves
+    // it on for the newer request that is still in flight.
+    if (seq === runSeq) mainEl.classList.remove("loading");
   }
 }
 
