@@ -38,6 +38,17 @@
       th, td { text-align:left; padding:7px 8px; border-bottom:1px solid var(--line); white-space:nowrap; }
       th { color:var(--muted); font-weight:500; }
       td.num, th.num { text-align:right; font-variant-numeric:tabular-nums; }
+      th.sortable { cursor:pointer; user-select:none; }
+      th.sortable:hover { color:var(--fg); }
+      .sort-ind { font-size:10px; margin-left:3px; }
+      .pill { display:inline-block; padding:1px 7px; margin:1px 4px 1px 0; border-radius:999px;
+        background:#11141a; border:1px solid var(--line); font-size:12px; }
+      td.models { white-space:normal; max-width:240px; }
+      td.proj { max-width:260px; overflow:hidden; text-overflow:ellipsis; }
+      .count { color:var(--muted); font-size:11px; }
+      .panel h3 .grp { float:right; text-transform:none; letter-spacing:0; font-weight:400;
+        color:var(--muted); cursor:pointer; display:inline-flex; align-items:center; gap:5px; }
+      .panel h3 .grp input { cursor:pointer; }
     </style>
   </head>
   <body>
@@ -58,7 +69,12 @@
         <div class="panel"><h3>By model</h3><canvas id="modelChart"></canvas></div>
       </div>
       <div class="panel" style="margin-bottom:10px"><h3>Token type split</h3><canvas id="tokenChart"></canvas></div>
-      <div class="panel"><h3>Sessions</h3><div id="tableWrap"></div></div>
+      <div class="panel">
+        <h3>Sessions
+          <label class="grp"><input type="checkbox" id="groupProj" checked /> group by project</label>
+        </h3>
+        <div id="tableWrap"></div>
+      </div>
     </main>
     <script type="module" src="./main.ts"></script>
   </body>

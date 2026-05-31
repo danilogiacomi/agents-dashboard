@@ -1,5 +1,11 @@
 import { Chart, registerables } from "chart.js";
-import { type DashboardData, SUPPORTED_TOOLS, type TemplateId } from "../src/types";
+import {
+  type DashboardData,
+  SUPPORTED_TOOLS,
+  type SessionRow,
+  type TemplateId,
+} from "../src/types";
+import { aggregateByProject, projectLabeler, shortModel } from "./format";
 
 Chart.register(...registerables);
 
@@ -31,6 +37,7 @@ const untilEl = $<HTMLInputElement>("until");
 const statusEl = $<HTMLDivElement>("status");
 const kpisEl = $<HTMLElement>("kpis");
 const tableWrap = $<HTMLDivElement>("tableWrap");
+const groupChk = $<HTMLInputElement>("groupProj");
 const mainEl = $<HTMLElement>("main");
 
 let selectedTemplate: TemplateId = "last-7-days";
@@ -38,6 +45,14 @@ let selectedTemplate: TemplateId = "last-7-days";
 // so rapidly switching controls never lets a stale response overwrite a newer one.
 let runSeq = 0;
 const charts: Record<string, Chart | undefined> = {};
+
+// Sessions-table state: the current rows plus how they're sorted. Default is by date,
+// descending (most recent first); clicking the Cost/Last activity headers re-sorts.
+let tableSessions: SessionRow[] = [];
+let sortKey: "date" | "cost" | "tokens" = "date";
+let sortDir: 1 | -1 = -1;
+// Default to one row per project (summed); the checkbox switches to per-session rows.
+let groupByProject = true;
 
 function initControls(): void {
   for (const t of SUPPORTED_TOOLS) {
@@ -63,6 +78,26 @@ function initControls(): void {
   for (const el of [sinceEl, untilEl]) {
     el.addEventListener("change", () => void run());
   }
+  // Sort the sessions table when a sortable header is clicked (delegated, survives rebuilds).
+  tableWrap.addEventListener("click", (e) => {
+    const th = (e.target as HTMLElement).closest<HTMLElement>("th[data-sort]");
+    if (!th) return;
+    const ds = th.dataset.sort;
+    const key: "date" | "cost" | "tokens" =
+      ds === "cost" ? "cost" : ds === "tokens" ? "tokens" : "date";
+    if (key === sortKey) {
+      sortDir = sortDir === 1 ? -1 : 1;
+    } else {
+      sortKey = key;
+      sortDir = -1;
+    }
+    renderTable();
+  });
+  // Toggle project-aggregated vs per-session rows.
+  groupChk.addEventListener("change", () => {
+    groupByProject = groupChk.checked;
+    renderTable();
+  });
 }
 
 function selectTemplate(id: TemplateId): void {
@@ -132,6 +167,7 @@ function render(data: DashboardData): void {
   if (data.sessions.length === 0) {
     kpisEl.hidden = true;
     kpisEl.innerHTML = ""; // clear stale cards from a previously selected tool
+    tableSessions = [];
     tableWrap.innerHTML = "<p>No usage in this range.</p>";
     for (const key of Object.keys(charts)) {
       charts[key]?.destroy();
@@ -158,7 +194,8 @@ function render(data: DashboardData): void {
   renderTimeChart(data);
   renderModelChart(data);
   renderTokenChart(data);
-  renderTable(data);
+  tableSessions = data.sessions;
+  renderTable();
 }
 
 function canvas(id: string): HTMLCanvasElement {
@@ -214,17 +251,41 @@ function renderTokenChart(data: DashboardData): void {
   });
 }
 
-function renderTable(data: DashboardData): void {
-  const rows = [...data.sessions].sort((a, b) => b.totalCost - a.totalCost);
-  const head =
-    "<table><thead><tr><th>Project</th><th>Models</th><th class='num'>Tokens</th><th class='num'>Cost</th><th>Last activity</th></tr></thead><tbody>";
-  const body = rows
-    .map(
-      (s) =>
-        `<tr><td>${esc(s.projectPath)}</td><td>${esc(s.modelsUsed.join(", "))}</td>` +
-        `<td class="num">${fmtNum(s.totalTokens)}</td><td class="num">${fmtUsd(s.totalCost)}</td>` +
-        `<td>${esc(s.lastActivity)}</td></tr>`,
-    )
+function renderTable(): void {
+  if (tableSessions.length === 0) {
+    tableWrap.innerHTML = "<p>No usage in this range.</p>";
+    return;
+  }
+  const baseRows = groupByProject ? aggregateByProject(tableSessions) : tableSessions;
+  const labelOf = projectLabeler(baseRows.map((r) => r.projectPath));
+  const sorted = [...baseRows].sort((a, b) => {
+    const cmp =
+      sortKey === "cost"
+        ? a.totalCost - b.totalCost
+        : sortKey === "tokens"
+          ? a.totalTokens - b.totalTokens
+          : a.lastActivity.localeCompare(b.lastActivity);
+    return cmp * sortDir;
+  });
+  const arrow = sortDir < 0 ? "▼" : "▲";
+  const ind = (key: "date" | "cost" | "tokens"): string =>
+    key === sortKey ? `<span class="sort-ind">${arrow}</span>` : "";
+  const head = `<table><thead><tr><th>Project</th><th>Models</th><th class='num sortable' data-sort='tokens'>Tokens${ind("tokens")}</th><th class='num sortable' data-sort='cost'>Cost${ind("cost")}</th><th class='sortable' data-sort='date'>Last activity${ind("date")}</th></tr></thead><tbody>`;
+  const body = sorted
+    .map((s) => {
+      const pills = s.modelsUsed
+        .map((m) => `<span class="pill" title="${esc(m)}">${esc(shortModel(m))}</span>`)
+        .join("");
+      const count = "sessionCount" in s ? s.sessionCount : 1;
+      const badge = groupByProject && count > 1 ? ` <span class="count">×${count}</span>` : "";
+      return (
+        `<tr><td class="proj" title="${esc(s.projectPath)}">${esc(labelOf(s.projectPath))}${badge}</td>` +
+        `<td class="models">${pills}</td>` +
+        `<td class="num">${fmtNum(s.totalTokens)}</td>` +
+        `<td class="num">${fmtUsd(s.totalCost)}</td>` +
+        `<td>${esc(s.lastActivity)}</td></tr>`
+      );
+    })
     .join("");
   tableWrap.innerHTML = `${head}${body}</tbody></table>`;
 }
