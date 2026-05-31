@@ -5,7 +5,7 @@ import {
   type SessionRow,
   type TemplateId,
 } from "../src/types";
-import { projectLabeler, shortModel } from "./format";
+import { aggregateByProject, projectLabeler, shortModel } from "./format";
 
 Chart.register(...registerables);
 
@@ -37,6 +37,7 @@ const untilEl = $<HTMLInputElement>("until");
 const statusEl = $<HTMLDivElement>("status");
 const kpisEl = $<HTMLElement>("kpis");
 const tableWrap = $<HTMLDivElement>("tableWrap");
+const groupChk = $<HTMLInputElement>("groupProj");
 const mainEl = $<HTMLElement>("main");
 
 let selectedTemplate: TemplateId = "last-7-days";
@@ -50,6 +51,8 @@ const charts: Record<string, Chart | undefined> = {};
 let tableSessions: SessionRow[] = [];
 let sortKey: "date" | "cost" | "tokens" = "date";
 let sortDir: 1 | -1 = -1;
+// Default to one row per project (summed); the checkbox switches to per-session rows.
+let groupByProject = true;
 
 function initControls(): void {
   for (const t of SUPPORTED_TOOLS) {
@@ -88,6 +91,11 @@ function initControls(): void {
       sortKey = key;
       sortDir = -1;
     }
+    renderTable();
+  });
+  // Toggle project-aggregated vs per-session rows.
+  groupChk.addEventListener("change", () => {
+    groupByProject = groupChk.checked;
     renderTable();
   });
 }
@@ -248,8 +256,9 @@ function renderTable(): void {
     tableWrap.innerHTML = "<p>No usage in this range.</p>";
     return;
   }
-  const labelOf = projectLabeler(tableSessions.map((s) => s.projectPath));
-  const sorted = [...tableSessions].sort((a, b) => {
+  const baseRows = groupByProject ? aggregateByProject(tableSessions) : tableSessions;
+  const labelOf = projectLabeler(baseRows.map((r) => r.projectPath));
+  const sorted = [...baseRows].sort((a, b) => {
     const cmp =
       sortKey === "cost"
         ? a.totalCost - b.totalCost
@@ -267,8 +276,10 @@ function renderTable(): void {
       const pills = s.modelsUsed
         .map((m) => `<span class="pill" title="${esc(m)}">${esc(shortModel(m))}</span>`)
         .join("");
+      const count = "sessionCount" in s ? s.sessionCount : 1;
+      const badge = groupByProject && count > 1 ? ` <span class="count">×${count}</span>` : "";
       return (
-        `<tr><td class="proj" title="${esc(s.projectPath)}">${esc(labelOf(s.projectPath))}</td>` +
+        `<tr><td class="proj" title="${esc(s.projectPath)}">${esc(labelOf(s.projectPath))}${badge}</td>` +
         `<td class="models">${pills}</td>` +
         `<td class="num">${fmtNum(s.totalTokens)}</td>` +
         `<td class="num">${fmtUsd(s.totalCost)}</td>` +

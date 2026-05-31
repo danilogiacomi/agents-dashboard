@@ -1,5 +1,47 @@
 // Pure display helpers for the sessions table (no DOM, unit-tested in test/format.test.ts).
 
+import type { SessionRow } from "../src/types";
+
+export interface ProjectRow {
+  projectPath: string;
+  modelsUsed: string[];
+  totalTokens: number;
+  totalCost: number;
+  lastActivity: string;
+  sessionCount: number;
+}
+
+/**
+ * Collapse per-session rows into one row per project: tokens/cost summed, models unioned
+ * (order-preserving, deduped), lastActivity = latest, plus a session count. Project order
+ * follows first appearance in the input.
+ */
+export function aggregateByProject(sessions: SessionRow[]): ProjectRow[] {
+  const byProject = new Map<string, ProjectRow>();
+  for (const s of sessions) {
+    let row = byProject.get(s.projectPath);
+    if (!row) {
+      row = {
+        projectPath: s.projectPath,
+        modelsUsed: [],
+        totalTokens: 0,
+        totalCost: 0,
+        lastActivity: "",
+        sessionCount: 0,
+      };
+      byProject.set(s.projectPath, row);
+    }
+    row.totalTokens += s.totalTokens;
+    row.totalCost += s.totalCost;
+    row.sessionCount += 1;
+    if (s.lastActivity > row.lastActivity) row.lastActivity = s.lastActivity;
+    for (const m of s.modelsUsed) {
+      if (!row.modelsUsed.includes(m)) row.modelsUsed.push(m);
+    }
+  }
+  return [...byProject.values()];
+}
+
 /** "claude-opus-4-8" -> "opus 4.8"; names that don't match pass through unchanged. */
 export function shortModel(full: string): string {
   const m = full.match(/^claude-([a-z]+)-(\d+)-(\d+)/i);

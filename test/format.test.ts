@@ -1,5 +1,18 @@
 import { describe, expect, test } from "bun:test";
-import { projectLabeler, shortModel } from "../web/format";
+import type { SessionRow } from "../src/types";
+import { aggregateByProject, projectLabeler, shortModel } from "../web/format";
+
+function session(over: Partial<SessionRow>): SessionRow {
+  return {
+    sessionId: "s",
+    projectPath: "-p",
+    modelsUsed: [],
+    totalTokens: 0,
+    totalCost: 0,
+    lastActivity: "2026-01-01",
+    ...over,
+  };
+}
 
 describe("shortModel", () => {
   test("shortens claude model names to 'family major.minor'", () => {
@@ -33,5 +46,49 @@ describe("projectLabeler", () => {
   test("with no common prefix, keeps the whole tail (sans leading dash)", () => {
     const label = projectLabeler(["-a-b", "-c-d"]);
     expect(label("-a-b")).toBe("a/b");
+  });
+});
+
+describe("aggregateByProject", () => {
+  test("sums tokens/cost, unions models, takes latest date, counts sessions per project", () => {
+    const rows = aggregateByProject([
+      session({
+        projectPath: "-proj-a",
+        totalTokens: 100,
+        totalCost: 5,
+        modelsUsed: ["opus"],
+        lastActivity: "2026-05-29",
+      }),
+      session({
+        projectPath: "-proj-a",
+        totalTokens: 50,
+        totalCost: 2,
+        modelsUsed: ["opus", "sonnet"],
+        lastActivity: "2026-05-30",
+      }),
+      session({
+        projectPath: "-proj-b",
+        totalTokens: 10,
+        totalCost: 1,
+        modelsUsed: ["haiku"],
+        lastActivity: "2026-05-28",
+      }),
+    ]);
+    expect(rows).toHaveLength(2);
+    const a = rows.find((r) => r.projectPath === "-proj-a");
+    expect(a).toEqual({
+      projectPath: "-proj-a",
+      modelsUsed: ["opus", "sonnet"],
+      totalTokens: 150,
+      totalCost: 7,
+      lastActivity: "2026-05-30",
+      sessionCount: 2,
+    });
+    const b = rows.find((r) => r.projectPath === "-proj-b");
+    expect(b?.sessionCount).toBe(1);
+  });
+
+  test("empty input yields no rows", () => {
+    expect(aggregateByProject([])).toEqual([]);
   });
 });
