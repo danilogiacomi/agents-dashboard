@@ -1,5 +1,11 @@
 import { describe, expect, test } from "bun:test";
-import { type CurrentUsageDeps, deriveClaudeUsage, deriveCodexUsage, getCurrentUsage, labelForWindow } from "../src/current-usage";
+import {
+  type CurrentUsageDeps,
+  deriveClaudeUsage,
+  deriveCodexUsage,
+  getCurrentUsage,
+  labelForWindow,
+} from "../src/current-usage";
 import { handleCurrentUsage } from "../src/current-usage-handler";
 import { claudeBlocksNoActive, claudeBlocksRaw, codexRateLimitsSample } from "./fixtures/sample";
 

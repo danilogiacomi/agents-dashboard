@@ -8,7 +8,12 @@ export interface CurrentUsageDeps {
 export async function getCurrentUsage(tool: string, deps: CurrentUsageDeps): Promise<CurrentUsage> {
   if (tool === "claude") return deriveClaudeUsage(await deps.runBlocks("claude"));
   if (tool === "codex") return deriveCodexUsage(await deps.readCodexRateLimits());
-  return { tool, available: false, windows: [], note: "current usage not available for this agent yet" };
+  return {
+    tool,
+    available: false,
+    windows: [],
+    note: "current usage not available for this agent yet",
+  };
 }
 
 export function labelForWindow(minutes: number): string {
