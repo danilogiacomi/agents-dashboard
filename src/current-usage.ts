@@ -23,3 +23,46 @@ export function deriveCodexUsage(rl: CodexRateLimits | null): CurrentUsage {
   const windows = [rl.secondary, rl.primary].filter((w): w is CodexRateWindow => w != null).map(codexWindow);
   return { tool: "codex", available: true, windows };
 }
+
+interface ClaudeBlock {
+  isActive?: boolean;
+  isGap?: boolean;
+  endTime?: string;
+  totalTokens?: number;
+}
+
+const CLAUDE_ESTIMATE_NOTE =
+  "Estimate: % is relative to your busiest 5-hour block, not a real plan limit (Claude does not expose quota locally).";
+
+function humanTokens(n: number): string {
+  if (n >= 1e6) return `${(n / 1e6).toFixed(1)}M tokens`;
+  if (n >= 1e3) return `${(n / 1e3).toFixed(1)}K tokens`;
+  return `${n} tokens`;
+}
+
+export function deriveClaudeUsage(raw: unknown): CurrentUsage {
+  const blocks: ClaudeBlock[] = Array.isArray((raw as { blocks?: unknown })?.blocks)
+    ? ((raw as { blocks: ClaudeBlock[] }).blocks)
+    : [];
+  const active = blocks.find((b) => b.isActive && !b.isGap);
+  if (!active || !active.endTime) {
+    return { tool: "claude", available: true, windows: [], note: "no active session in the last 5 hours" };
+  }
+  const peak = Math.max(0, ...blocks.filter((b) => !b.isGap).map((b) => b.totalTokens ?? 0));
+  const used = active.totalTokens ?? 0;
+  const usedPercent = peak > 0 ? Math.max(0, Math.min(100, (used / peak) * 100)) : 0;
+  return {
+    tool: "claude",
+    available: true,
+    windows: [
+      {
+        label: "5-hour session",
+        usedPercent,
+        resetsAt: new Date(active.endTime).toISOString(),
+        basis: "estimate",
+        detail: humanTokens(used),
+      },
+    ],
+    note: CLAUDE_ESTIMATE_NOTE,
+  };
+}

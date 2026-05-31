@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
-import { deriveCodexUsage, labelForWindow } from "../src/current-usage";
-import { codexRateLimitsSample } from "./fixtures/sample";
+import { deriveClaudeUsage, deriveCodexUsage, labelForWindow } from "../src/current-usage";
+import { claudeBlocksNoActive, claudeBlocksRaw, codexRateLimitsSample } from "./fixtures/sample";
 
 describe("labelForWindow", () => {
   test("maps the 5-hour window", () => {
@@ -44,5 +44,33 @@ describe("deriveCodexUsage", () => {
     expect(u.available).toBe(false);
     expect(u.windows).toHaveLength(0);
     expect(u.note).toBeTruthy();
+  });
+});
+
+describe("deriveClaudeUsage", () => {
+  test("estimates percent against the historical-peak block", () => {
+    const u = deriveClaudeUsage(claudeBlocksRaw);
+    expect(u.available).toBe(true);
+    expect(u.windows).toHaveLength(1);
+    const w = u.windows[0];
+    expect(w?.label).toBe("5-hour session");
+    expect(w?.basis).toBe("estimate");
+    expect(w?.usedPercent).toBe(50);
+    expect(w?.resetsAt).toBe("2026-05-31T13:00:00.000Z");
+    expect(u.note).toBeTruthy();
+  });
+
+  test("reports no active session when none is active", () => {
+    const u = deriveClaudeUsage(claudeBlocksNoActive);
+    expect(u.available).toBe(true);
+    expect(u.windows).toHaveLength(0);
+    expect(u.note).toContain("no active session");
+  });
+
+  test("handles a zero historical peak without dividing by zero", () => {
+    const u = deriveClaudeUsage({
+      blocks: [{ id: "a", isActive: true, isGap: false, endTime: "2026-05-31T13:00:00.000Z", totalTokens: 0 }],
+    });
+    expect(u.windows[0]?.usedPercent).toBe(0);
   });
 });
