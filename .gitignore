@@ -39,3 +39,6 @@ build/
 *.egg-info/
 # Go
 # (Go has no vendored output to ignore by default)
+
+# Bun
+web/dist/

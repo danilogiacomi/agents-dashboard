@@ -5,41 +5,40 @@
 
 ## Overview
 
-<!-- TODO: One paragraph on what this project does and who uses it. -->
-_Project description goes here._
+ccusage-dash is a local, single-user web dashboard that wraps the `ccusage` CLI.
+Pick a coding-agent tool and a date range in the browser; it spawns ccusage and renders
+KPI cards, cost/tokens over time, model breakdown, and a sessions table.
 
 ## Setup
 
-<!-- TODO-by-stack: replace with real install command once the stack is chosen. -->
 ```sh
-# Node:   npm install
-# Python: uv sync   (or: pip install -e .)
-# Go:     go mod download
+bun install
 ```
 
 ## Build · Test · Lint
 
-These are the commands an agent should run to validate a change. Replace the
-placeholders with the real commands as soon as the toolchain exists.
-
-| Task  | Command (TODO-by-stack)                          |
-|-------|--------------------------------------------------|
-| Build | `# e.g. npm run build  /  go build ./...`        |
-| Test  | `# e.g. npm test  /  pytest  /  go test ./...`   |
-| Lint  | `# e.g. npm run lint  /  ruff check  /  golangci-lint run` |
+| Task  | Command              |
+|-------|----------------------|
+| Dev   | `bun run dev`        |
+| Start | `bun run start`      |
+| Test  | `bun test`           |
+| Types | `bun run typecheck`  |
+| Lint  | `bun run lint`       |
 
 Run **test + lint** before considering any task done. See
 [verification](#verification) below.
 
 ## Project structure
 
-<!-- TODO: point to the main source dirs once they exist, e.g. `src/`, `tests/`. -->
-- `docs/` — project + agent-execution documentation
-- `specs/` — task specifications (use `specs/TEMPLATE.md`)
+- `src/` — server + logic modules (types, ranges, aggregate, ccusage, usage-handler, server)
+- `web/` — index.html + main.ts frontend
+- `test/` — bun tests + fixtures
+- `docs/` — ARCHITECTURE.md + adr/
+- `specs/` — task specifications
 
 ## Code style
 
-<!-- TODO: link to the formatter/linter config (e.g. .eslintrc, ruff.toml) once added. -->
+Formatter/linter config: `biome.json` (run `bun run lint` / `bun run format`).
 Follow the configured formatter and linter; do not hand-format. Match the
 conventions of surrounding code.
 

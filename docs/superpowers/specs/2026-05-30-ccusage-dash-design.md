@@ -148,7 +148,7 @@ summed by `modelName`; `tokenSplit` = token columns summed across the range.
 | Empty range (no sessions) | `200` empty DTO | "No usage in this range" |
 | Malformed ccusage JSON | `502` (log stderr) | error banner |
 | Invalid custom dates | `400` | inline field validation |
-| Spawn exceeds ~60s | `504` | timeout banner |
+| Spawn exceeds ~60s | `502` (timeout surfaced as a CcusageError) | error banner |
 
 ## 8. Testing strategy
 

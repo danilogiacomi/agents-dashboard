@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ccusage-dash</title>
+    <style>
+      :root { --bg:#0f1115; --panel:#181b22; --line:#272b34; --fg:#e6e8ec; --muted:#9aa3b2; --accent:#4f8cff; }
+      * { box-sizing: border-box; }
+      body { margin:0; font:14px/1.5 system-ui,sans-serif; background:var(--bg); color:var(--fg); }
+      header { display:flex; gap:10px; align-items:center; flex-wrap:wrap;
+        padding:12px 16px; background:var(--panel); border-bottom:1px solid var(--line); position:sticky; top:0; }
+      header strong { font-size:16px; margin-right:8px; }
+      select, input[type="date"], button { background:#11141a; color:var(--fg);
+        border:1px solid var(--line); border-radius:6px; padding:6px 10px; font:inherit; }
+      .chip { cursor:pointer; }
+      .chip[aria-pressed="true"] { background:var(--accent); border-color:var(--accent); color:#fff; }
+      #custom { display:none; gap:6px; align-items:center; }
+      #custom.show { display:inline-flex; }
+      button#run { margin-left:auto; cursor:pointer; background:var(--accent); border-color:var(--accent); color:#fff; }
+      main { padding:16px; max-width:1200px; margin:0 auto; }
+      #status { color:var(--muted); padding:8px 0; min-height:24px; }
+      .kpis { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-bottom:14px; }
+      .kpi { background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:14px; }
+      .kpi .label { color:var(--muted); font-size:12px; text-transform:uppercase; letter-spacing:.04em; }
+      .kpi .value { font-size:24px; font-weight:600; margin-top:4px; }
+      .grid { display:grid; grid-template-columns:2fr 1fr; gap:10px; margin-bottom:10px; }
+      .panel { background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:14px; }
+      .panel h3 { margin:0 0 10px; font-size:13px; color:var(--muted); text-transform:uppercase; letter-spacing:.04em; }
+      table { width:100%; border-collapse:collapse; font-size:13px; }
+      th, td { text-align:left; padding:7px 8px; border-bottom:1px solid var(--line); white-space:nowrap; }
+      th { color:var(--muted); font-weight:500; }
+      td.num, th.num { text-align:right; font-variant-numeric:tabular-nums; }
+    </style>
+  </head>
+  <body>
+    <header>
+      <strong>ccusage-dash</strong>
+      <select id="tool" aria-label="Tool"></select>
+      <span id="templates"></span>
+      <span id="custom">
+        <input type="date" id="since" aria-label="Since" />
+        <input type="date" id="until" aria-label="Until" />
+      </span>
+      <button id="run">Run</button>
+    </header>
+    <main>
+      <div id="status">Pick a tool and range, then Run.</div>
+      <section class="kpis" id="kpis" hidden></section>
+      <div class="grid">
+        <div class="panel"><h3>Cost &amp; tokens over time</h3><canvas id="timeChart"></canvas></div>
+        <div class="panel"><h3>By model</h3><canvas id="modelChart"></canvas></div>
+      </div>
+      <div class="panel" style="margin-bottom:10px"><h3>Token type split</h3><canvas id="tokenChart"></canvas></div>
+      <div class="panel"><h3>Sessions</h3><div id="tableWrap"></div></div>
+    </main>
+    <script type="module" src="./main.ts"></script>
+  </body>
+</html>
