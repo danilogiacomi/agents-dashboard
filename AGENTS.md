@@ -5,7 +5,7 @@
 
 ## Overview
 
-ccusage-dash is a local, single-user web dashboard that wraps the `ccusage` CLI.
+Agents Dashboard is a local, single-user web dashboard that wraps the `ccusage` CLI.
 Pick a coding-agent tool and a date range in the browser; it spawns ccusage and renders
 KPI cards, cost/tokens over time, model breakdown, and a sessions table.
 

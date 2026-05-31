@@ -14,4 +14,4 @@ const server = Bun.serve({
   },
 });
 
-console.log(`ccusage-dash running at http://localhost:${server.port}`);
+console.log(`Agents Dashboard running at http://localhost:${server.port}`);
