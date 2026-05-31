@@ -13,6 +13,13 @@ With [Bun](https://bun.sh) ≥ 1.3 installed, run it straight from GitHub — no
 bunx github:danilogiacomi/agents-dashboard
 ```
 
+If that still shows an older copy, clear Bun's package cache first:
+
+```sh
+bun pm cache rm
+bunx --force github:danilogiacomi/agents-dashboard
+```
+
 Then open <http://localhost:3000>. On a different port:
 
 ```sh
@@ -25,6 +32,13 @@ PORT=8080 bunx github:danilogiacomi/agents-dashboard
 version you originally pulled. To force the latest from `main`:
 
 ```sh
+bunx --force github:danilogiacomi/agents-dashboard
+```
+
+If you still see an older copy, clear Bun's package cache and try again:
+
+```sh
+bun pm cache rm
 bunx --force github:danilogiacomi/agents-dashboard
 ```
 
@@ -103,11 +117,11 @@ footprint, read from the local agent logs the dashboard renders.
 
 | Metric | Value |
 |---|---|
-| **Total tokens** | **299.9M** |
-| Token breakdown | 1.5M output · 136.4K input · 6.6M cache-write · 291.7M cache-read |
-| Agent time | ~4h 25m active (21h 26m wall-clock) |
-| Turns | 1,129 assistant turns · 524 tool calls |
-| Agents / models | Claude Code — claude-opus-4-8 |
+| **Total tokens** | **301.6M** |
+| Token breakdown | 1.5M output · 468.3K input · 6.7M cache-write · 293.0M cache-read |
+| Agent time | ~4h 33m active (21h 34m wall-clock) |
+| Turns | 1,133 assistant turns · 526 tool calls |
+| Agents / models | Claude Code · Codex — claude-opus-4-8 |
 | As of | 2026-05-30 → 2026-05-31 |
 
 > 💡 Most of those tokens are *cache reads* — re-reading the growing conversation each
