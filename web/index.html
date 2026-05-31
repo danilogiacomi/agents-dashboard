@@ -11,6 +11,10 @@
       header { display:flex; gap:10px; align-items:center; flex-wrap:wrap;
         padding:12px 16px; background:var(--panel); border-bottom:1px solid var(--line); position:sticky; top:0; }
       header strong { font-size:16px; margin-right:8px; }
+      .star { margin-left:auto; text-decoration:none; color:var(--fg); font-size:13px;
+        background:#11141a; border:1px solid var(--line); border-radius:6px; padding:6px 10px;
+        white-space:nowrap; }
+      .star:hover { border-color:var(--accent); color:var(--accent); }
       select, input[type="date"], button { background:#11141a; color:var(--fg);
         border:1px solid var(--line); border-radius:6px; padding:6px 10px; font:inherit; }
       .chip { cursor:pointer; }
@@ -80,6 +84,8 @@
         <input type="date" id="since" aria-label="Since" />
         <input type="date" id="until" aria-label="Until" />
       </span>
+      <a class="star" href="https://github.com/danilogiacomi/agents-dashboard"
+        target="_blank" rel="noopener noreferrer">⭐ Star on GitHub</a>
     </header>
     <main id="main" class="loading">
       <div id="status"><span class="spinner"></span>Loading…</div>
