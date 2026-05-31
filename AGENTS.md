@@ -24,9 +24,14 @@ bun install
 | Test  | `bun test`           |
 | Types | `bun run typecheck`  |
 | Lint  | `bun run lint`       |
+| Self-usage | `bun run usage:self` |
 
 Run **test + lint** before considering any task done. See
 [verification](#verification) below.
+
+`usage:self` regenerates the "Built by agents" section of `README.md` (between the
+`usage:self` markers) from this repo's local agent logs. A pre-commit hook in
+`.githooks/` runs it automatically; enable it once with `git config core.hooksPath .githooks`.
 
 ## Project structure
 
