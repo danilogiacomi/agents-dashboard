@@ -24,7 +24,8 @@
     "test": "bun test",
     "typecheck": "tsc --noEmit",
     "lint": "biome check .",
-    "format": "biome format --write ."
+    "format": "biome format --write .",
+    "usage:self": "bun run scripts/usage-self.ts"
   },
   "dependencies": {
     "chart.js": "^4.4.0"
