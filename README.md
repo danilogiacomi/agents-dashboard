@@ -1,4 +1,4 @@
-# ccusage-dash
+# Agents Dashboard
 
 A small local web dashboard that wraps the [`ccusage`](https://www.npmjs.com/package/ccusage)
 CLI. Pick a coding-agent tool (claude, codex, …) and a date range in the browser; it runs
@@ -10,13 +10,13 @@ model, a token-type split, and a sessions table.
 With [Bun](https://bun.sh) ≥ 1.3 installed, run it straight from GitHub — no clone needed:
 
 ```sh
-bunx github:danilogiacomi/ccusage-dashboard
+bunx github:danilogiacomi/agents-dashboard
 ```
 
 Then open <http://localhost:3000>. On a different port:
 
 ```sh
-PORT=8080 bunx github:danilogiacomi/ccusage-dashboard
+PORT=8080 bunx github:danilogiacomi/agents-dashboard
 ```
 
 ## Requirements
@@ -47,8 +47,8 @@ Tools with no data simply show "No usage in this range".
 ## Development
 
 ```sh
-git clone https://github.com/danilogiacomi/ccusage-dashboard.git
-cd ccusage-dash
+git clone https://github.com/danilogiacomi/agents-dashboard.git
+cd agents-dashboard
 bun install
 bun run dev        # watch mode, http://localhost:3000
 ```
@@ -63,7 +63,7 @@ bun run dev        # watch mode, http://localhost:3000
 
 ## Notes
 
-- ccusage emits a different JSON schema per tool; ccusage-dash normalizes them into one shape
+- ccusage emits a different JSON schema per tool; Agents Dashboard normalizes them into one shape
   (see `src/normalize.ts`). codex reports per-model **tokens** but not per-model **cost**, so
   its "By model" chart (which is cost-based) is empty — the sessions table still lists models.
 

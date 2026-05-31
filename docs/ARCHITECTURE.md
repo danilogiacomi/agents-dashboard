@@ -1,6 +1,6 @@
 # Architecture
 
-ccusage-dash is a local, single-user web app that wraps the external `ccusage` CLI.
+Agents Dashboard is a local, single-user web app that wraps the external `ccusage` CLI.
 
 ## Data flow
 
