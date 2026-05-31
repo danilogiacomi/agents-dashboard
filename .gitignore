@@ -42,3 +42,6 @@ build/
 
 # Bun
 web/dist/
+
+# playwright
+.playwright-mcp/
