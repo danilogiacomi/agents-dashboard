@@ -182,7 +182,7 @@ describe("renderSection", () => {
     });
     expect(section.startsWith(START)).toBe(true);
     expect(section.trimEnd().endsWith(END)).toBe(true);
-    expect(section).toContain("### 270.9M tokens");
+    expect(section).toContain("| **Total tokens** | **270.9M** |");
     expect(section).toContain("2026-05-30 → 2026-05-31");
     expect(section).toContain("Claude Code");
   });

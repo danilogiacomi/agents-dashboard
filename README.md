@@ -92,15 +92,14 @@ This dashboard is itself built almost entirely by coding agents — fitting, sin
 exists to *measure* coding agents. The numbers below are this repo's own development
 footprint, read from the local agent logs the dashboard renders.
 
-> ### 283.9M tokens
-
-| | |
+| Metric | Value |
 |---|---|
-| **Token breakdown** | 1.5M output · 133.3K input · 6.6M cache-write · 275.7M cache-read |
-| **Agent time** | ~4h 13m active (20h 57m wall-clock) |
-| **Turns** | 1,066 assistant turns · 495 tool calls |
-| **Agents / models** | Claude Code — claude-opus-4-8 |
-| **As of** | 2026-05-30 → 2026-05-31 |
+| **Total tokens** | **287.1M** |
+| Token breakdown | 1.5M output · 135.6K input · 6.6M cache-write · 278.9M cache-read |
+| Agent time | ~4h 18m active (21h 2m wall-clock) |
+| Turns | 1,079 assistant turns · 501 tool calls |
+| Agents / models | Claude Code — claude-opus-4-8 |
+| As of | 2026-05-30 → 2026-05-31 |
 
 > 💡 Most of those tokens are *cache reads* — re-reading the growing conversation each
 > turn — which is why the total dwarfs the tokens actually written. The dashboard's
