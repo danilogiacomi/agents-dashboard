@@ -23,6 +23,41 @@ export interface RunOptions {
   timeoutMs?: number;
 }
 
+export function buildBlocksArgs(_tool: string): string[] {
+  return ["blocks", "--json"];
+}
+
+export async function runCcusageBlocks(tool: string, opts: RunOptions = {}): Promise<unknown> {
+  const binParts = (opts.bin ?? process.env.CCUSAGE_BIN ?? "bunx ccusage").split(" ");
+  const head = binParts[0];
+  if (!head) throw new CcusageError("CCUSAGE_BIN is empty");
+  const cmd = [head, ...binParts.slice(1), ...buildBlocksArgs(tool)];
+
+  const proc = Bun.spawn(cmd, { stdout: "pipe", stderr: "pipe" });
+  let timedOut = false;
+  const timer = setTimeout(() => {
+    timedOut = true;
+    proc.kill();
+  }, opts.timeoutMs ?? 60_000);
+
+  try {
+    const [stdout, stderr, code] = await Promise.all([
+      new Response(proc.stdout).text(),
+      new Response(proc.stderr).text(),
+      proc.exited,
+    ]);
+    if (timedOut) throw new CcusageError("ccusage blocks timed out", stderr);
+    if (code !== 0) throw new CcusageError(`ccusage blocks exited with code ${code}`, stderr);
+    try {
+      return JSON.parse(stdout);
+    } catch {
+      throw new CcusageError("failed to parse ccusage blocks JSON output", stdout.slice(0, 500));
+    }
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 export async function runCcusage(
   tool: string,
   grouping: Grouping,

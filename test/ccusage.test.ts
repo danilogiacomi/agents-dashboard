@@ -1,5 +1,11 @@
 import { describe, expect, test } from "bun:test";
-import { buildCcusageArgs } from "../src/ccusage";
+import { buildBlocksArgs, buildCcusageArgs } from "../src/ccusage";
+
+describe("buildBlocksArgs", () => {
+  test("requests JSON blocks for the given tool", () => {
+    expect(buildBlocksArgs("claude")).toEqual(["blocks", "--json"]);
+  });
+});
 
 describe("buildCcusageArgs", () => {
   test("includes since and until when present", () => {
