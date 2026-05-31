@@ -28,12 +28,14 @@ const templatesEl = $<HTMLSpanElement>("templates");
 const customEl = $<HTMLSpanElement>("custom");
 const sinceEl = $<HTMLInputElement>("since");
 const untilEl = $<HTMLInputElement>("until");
-const runBtn = $<HTMLButtonElement>("run");
 const statusEl = $<HTMLDivElement>("status");
 const kpisEl = $<HTMLElement>("kpis");
 const tableWrap = $<HTMLDivElement>("tableWrap");
 
 let selectedTemplate: TemplateId = "last-7-days";
+// Monotonic request id: a query is only rendered if it is still the latest one,
+// so rapidly switching controls never lets a stale response overwrite a newer one.
+let runSeq = 0;
 const charts: Record<string, Chart | undefined> = {};
 
 function initControls(): void {
@@ -49,10 +51,17 @@ function initControls(): void {
     b.textContent = t.label;
     b.dataset.id = t.id;
     b.setAttribute("aria-pressed", String(t.id === selectedTemplate));
-    b.addEventListener("click", () => selectTemplate(t.id));
+    b.addEventListener("click", () => {
+      selectTemplate(t.id);
+      void run();
+    });
     templatesEl.append(b);
   }
-  runBtn.addEventListener("click", () => void run());
+  // No Run button: changing any control re-queries automatically.
+  toolSel.addEventListener("change", () => void run());
+  for (const el of [sinceEl, untilEl]) {
+    el.addEventListener("change", () => void run());
+  }
 }
 
 function selectTemplate(id: TemplateId): void {
@@ -86,10 +95,11 @@ async function run(): Promise<void> {
     params.set("since", sinceEl.value);
     params.set("until", untilEl.value);
   }
+  const seq = ++runSeq;
   statusEl.textContent = "Running ccusage…";
-  runBtn.disabled = true;
   try {
     const res = await fetch(`/api/usage?${params}`);
+    if (seq !== runSeq) return; // a newer request superseded this one
     if (!res.ok) {
       let message = res.statusText;
       try {
@@ -102,11 +112,10 @@ async function run(): Promise<void> {
       return;
     }
     const body = (await res.json()) as DashboardData;
+    if (seq !== runSeq) return; // superseded while parsing
     render(body);
   } catch (e) {
-    statusEl.textContent = `Request failed: ${(e as Error).message}`;
-  } finally {
-    runBtn.disabled = false;
+    if (seq === runSeq) statusEl.textContent = `Request failed: ${(e as Error).message}`;
   }
 }
 
@@ -214,3 +223,5 @@ function renderTable(data: DashboardData): void {
 }
 
 initControls();
+// Auto-run on first load with the default tool (claude) and range (last 7 days).
+void run();
