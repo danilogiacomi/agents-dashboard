@@ -131,6 +131,7 @@ function render(data: DashboardData): void {
 
   if (data.sessions.length === 0) {
     kpisEl.hidden = true;
+    kpisEl.innerHTML = ""; // clear stale cards from a previously selected tool
     tableWrap.innerHTML = "<p>No usage in this range.</p>";
     for (const key of Object.keys(charts)) {
       charts[key]?.destroy();

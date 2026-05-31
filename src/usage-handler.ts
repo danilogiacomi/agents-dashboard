@@ -1,14 +1,8 @@
 import { aggregate } from "./aggregate";
 import { CcusageError, type Grouping } from "./ccusage";
+import { normalizeDailyReport, normalizeSessionReport } from "./normalize";
 import { resolveRange } from "./ranges";
-import {
-  type CcusageDailyReport,
-  type CcusageSessionReport,
-  type DashboardData,
-  type DateRange,
-  SUPPORTED_TOOLS,
-  type TemplateId,
-} from "./types";
+import { type DashboardData, type DateRange, SUPPORTED_TOOLS, type TemplateId } from "./types";
 
 export interface HandlerDeps {
   run: (tool: string, grouping: Grouping, range: DateRange) => Promise<unknown>;
@@ -48,16 +42,14 @@ export async function handleUsage(req: Request, deps: HandlerDeps): Promise<Resp
   }
 
   try {
-    const [daily, session] = await Promise.all([
-      deps.run(tool, "daily", range) as Promise<CcusageDailyReport>,
-      deps.run(tool, "session", range) as Promise<CcusageSessionReport>,
+    const [dailyRaw, sessionRaw] = await Promise.all([
+      deps.run(tool, "daily", range),
+      deps.run(tool, "session", range),
     ]);
-    if (!Array.isArray(daily?.daily)) {
-      throw new CcusageError("ccusage returned an unexpected daily report shape");
-    }
-    if (!Array.isArray(session?.sessions)) {
-      throw new CcusageError("ccusage returned an unexpected session report shape");
-    }
+    // Each tool has its own JSON schema; normalize into the canonical shape.
+    // Bad shapes (no sessions/daily array) throw CcusageError -> 502.
+    const daily = normalizeDailyReport(dailyRaw);
+    const session = normalizeSessionReport(sessionRaw);
     const data: DashboardData = aggregate(daily, session, {
       tool,
       template,

@@ -1,7 +1,14 @@
 import { describe, expect, test } from "bun:test";
 import { CcusageError } from "../src/ccusage";
 import { type HandlerDeps, handleUsage } from "../src/usage-handler";
-import { emptyDaily, emptySession, sampleDaily, sampleSession } from "./fixtures/sample";
+import {
+  codexDailyRaw,
+  codexSessionRaw,
+  emptyDaily,
+  emptySession,
+  sampleDaily,
+  sampleSession,
+} from "./fixtures/sample";
 
 const NOW = new Date(2026, 4, 30);
 
@@ -29,6 +36,18 @@ describe("handleUsage", () => {
       since: "2026-05-24",
       until: "2026-05-30",
     });
+  });
+
+  test("returns 200 for codex's differently-shaped JSON (regression: was 500)", async () => {
+    const res = await handleUsage(
+      req("tool=codex&template=last-7-days"),
+      deps({ run: async (_t, g) => (g === "daily" ? codexDailyRaw : codexSessionRaw) }),
+    );
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body.kpis.totalCost).toBe(1.25); // mapped from costUSD
+    expect(body.sessions[0].projectPath).toBe("/home/u/proj"); // mapped from directory
+    expect(body.sessions[0].modelsUsed).toEqual(["gpt-5.4"]); // from models map
   });
 
   test("rejects an unsupported tool with 400", async () => {

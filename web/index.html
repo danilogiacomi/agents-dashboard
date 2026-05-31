@@ -26,6 +26,8 @@
       /* While loading, dim the results but keep the status line (with spinner) crisp. */
       main.loading > :not(#status) { opacity:.45; transition:opacity .15s; }
       .kpis { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-bottom:14px; }
+      /* `display:grid` above outranks the UA [hidden] rule, so make hidden explicit. */
+      .kpis[hidden] { display:none; }
       .kpi { background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:14px; }
       .kpi .label { color:var(--muted); font-size:12px; text-transform:uppercase; letter-spacing:.04em; }
       .kpi .value { font-size:24px; font-weight:600; margin-top:4px; }
