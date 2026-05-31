@@ -49,6 +49,21 @@ export function shortModel(full: string): string {
   return full;
 }
 
+// Humanize a remaining-milliseconds duration as a compact countdown.
+export function fmtCountdown(ms: number): string {
+  if (ms <= 0) return "now";
+  const totalMin = Math.floor(ms / 60_000);
+  const h = Math.floor(totalMin / 60);
+  const m = totalMin % 60;
+  if (h > 0) return `${h}h ${m}m`;
+  if (m > 0) return `${m}m`;
+  return `${Math.floor(ms / 1000)}s`;
+}
+
+export function fmtPercent(p: number): string {
+  return `${Math.round(p)}%`;
+}
+
 /**
  * Build a labeler that drops the path segments common to every project, leaving only
  * the distinguishing tail (always keeping at least the last segment). Project paths are
