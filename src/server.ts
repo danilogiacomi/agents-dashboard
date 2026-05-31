@@ -1,3 +1,4 @@
+#!/usr/bin/env bun
 import index from "../web/index.html";
 import { runCcusage } from "./ccusage";
 import { handleUsage } from "./usage-handler";
