@@ -10,13 +10,13 @@ model, a token-type split, and a sessions table.
 With [Bun](https://bun.sh) ≥ 1.3 installed, run it straight from GitHub — no clone needed:
 
 ```sh
-bunx github:danilogiacomi/ccusage-dash
+bunx github:danilogiacomi/ccusage-dashboard
 ```
 
 Then open <http://localhost:3000>. On a different port:
 
 ```sh
-PORT=8080 bunx github:danilogiacomi/ccusage-dash
+PORT=8080 bunx github:danilogiacomi/ccusage-dashboard
 ```
 
 ## Requirements
@@ -47,7 +47,7 @@ Tools with no data simply show "No usage in this range".
 ## Development
 
 ```sh
-git clone https://github.com/danilogiacomi/ccusage-dash.git
+git clone https://github.com/danilogiacomi/ccusage-dashboard.git
 cd ccusage-dash
 bun install
 bun run dev        # watch mode, http://localhost:3000
