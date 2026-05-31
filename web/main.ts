@@ -131,7 +131,6 @@ function esc(s: string): string {
 }
 
 async function run(): Promise<void> {
-  void loadCurrentUsage();
   const params = new URLSearchParams({ tool: toolSel.value, template: selectedTemplate });
   if (selectedTemplate === "custom") {
     if (!sinceEl.value || !untilEl.value) {
@@ -166,7 +165,13 @@ async function run(): Promise<void> {
   } finally {
     // Only the latest request clears the loading state; a superseded one leaves
     // it on for the newer request that is still in flight.
-    if (seq === runSeq) mainEl.classList.remove("loading");
+    if (seq === runSeq) {
+      mainEl.classList.remove("loading");
+      // Load current usage *after* the dashboard query settles, not alongside it:
+      // `ccusage blocks` parses the same large logs, and three concurrent ccusage
+      // spawns can exhaust memory and get one SIGKILLed (exit 137).
+      void loadCurrentUsage();
+    }
   }
 }
 
