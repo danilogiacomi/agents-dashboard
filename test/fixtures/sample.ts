@@ -86,3 +86,51 @@ export const sampleDaily: CcusageDailyReport = {
 
 export const emptySession: CcusageSessionReport = { sessions: [] };
 export const emptyDaily: CcusageDailyReport = { daily: [] };
+
+// Raw, non-canonical shapes as emitted by `ccusage codex --json`: cost is `costUSD`,
+// project is `directory`, models is a map (not a string[]), and there is no
+// `modelBreakdowns`. Typed as `unknown` because they intentionally do not match the
+// canonical CcusageSessionReport/CcusageDailyReport types.
+export const codexSessionRaw: unknown = {
+  sessions: [
+    {
+      sessionId: "cx1",
+      directory: "/home/u/proj",
+      lastActivity: "2026-05-30",
+      inputTokens: 73183,
+      outputTokens: 7778,
+      cachedInputTokens: 372224,
+      reasoningOutputTokens: 3396,
+      totalTokens: 453185,
+      costUSD: 1.25,
+      models: {
+        "gpt-5.4": {
+          cachedInputTokens: 372224,
+          inputTokens: 73183,
+          isFallback: false,
+          outputTokens: 7778,
+          reasoningOutputTokens: 3396,
+          totalTokens: 453185,
+        },
+      },
+      sessionFile: "/x.jsonl",
+    },
+  ],
+  totals: { totalCost: 1.25 },
+};
+
+export const codexDailyRaw: unknown = {
+  daily: [
+    {
+      date: "2026-05-30",
+      inputTokens: 73183,
+      outputTokens: 7778,
+      cachedInputTokens: 372224,
+      reasoningOutputTokens: 3396,
+      totalTokens: 453185,
+      costUSD: 1.25,
+      models: { "gpt-5.4": { totalTokens: 453185 } },
+    },
+  ],
+  totals: {},
+};
