@@ -1,5 +1,7 @@
 # Agents Dashboard
 
+[![Agent Ready](.agent-ready/badge.svg)](https://github.com/CAF-Agency/agent-ready)
+
 A small local web dashboard that wraps the [`ccusage`](https://www.npmjs.com/package/ccusage)
 CLI. Pick a coding-agent tool (claude, codex, …) and a date range in the browser; it runs
 ccusage, aggregates the result, and renders KPI cards, cost/tokens over time, a breakdown by
@@ -102,6 +104,11 @@ Opening this repo in an MCP-capable agent (Claude Code, etc.) picks up `.mcp.jso
 declares the [Serena](https://github.com/oraios/serena) semantic code-navigation server. It
 runs via `uvx` (install [uv](https://docs.astral.sh/uv/)); the first launch fetches Serena.
 
+The repo scores **76/100** on the [agent-ready](https://github.com/CAF-Agency/agent-ready)
+agentic readiness scale (🟢 Ready). The scan covers agent instructions, navigability,
+testing, CI/CD, tooling, security, and spec-driven workflow. Full findings are in
+[`.agent-ready/agent-ready-report.md`](.agent-ready/agent-ready-report.md).
+
 ## Docs
 
 - Architecture: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)
@@ -117,12 +124,12 @@ footprint, read from the local agent logs the dashboard renders.
 
 | Metric | Value |
 |---|---|
-| **Total tokens** | **303.5M** |
-| Token breakdown | 1.5M output · 1.4M input · 6.7M cache-write · 293.9M cache-read |
-| Agent time | ~4h 41m active (21h 42m wall-clock) |
-| Turns | 1,133 assistant turns · 526 tool calls |
-| Agents / models | Claude Code · Codex — claude-opus-4-8 |
-| As of | 2026-05-30 → 2026-05-31 |
+| **Total tokens** | **310.0M** |
+| Token breakdown | 1.7M output · 1.6M input · 7.1M cache-write · 299.6M cache-read |
+| Agent time | ~5h 5m active (306h 24m wall-clock) |
+| Turns | 1,212 assistant turns · 578 tool calls |
+| Agents / models | Claude Code · Codex — claude-opus-4-8, claude-sonnet-4-6 |
+| As of | 2026-05-30 → 2026-06-12 |
 
 > 💡 Most of those tokens are *cache reads* — re-reading the growing conversation each
 > turn — which is why the total dwarfs the tokens actually written. The dashboard's

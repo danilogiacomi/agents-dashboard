@@ -1,158 +1,256 @@
-# 🌱 Agentic Readiness Report — ccusage
+# Agentic Readiness Report — agents-dashboard (ccusage)
 
-**Mode**: greenfield (fresh `init` baseline) · **Agents**: claude · **Generated**: 2026-05-30
-**Overall Score**: **36 / 100** 🟡 Partially Ready
-**Script signals**: available (Python 3.14, all 7 helper scripts ran)
+**Date**: 2026-06-12 · **Mode**: brownfield · **Agents**: portable (none declared)  
+**Script signals**: available (Python 3.14.4, all 7 helper scripts ran)
+
+---
 
 ## 1. Executive Summary
 
-This is a freshly scaffolded greenfield baseline. The portable safety and instruction
-foundations are in place; the gaps are the things that only exist once real code, tests,
-and a chosen stack land. Scoring is unchanged from brownfield — greenfield only reframes
-remediation as "next steps," not "debt."
+**Overall Score: 76/100 🟢 Ready**
 
 ```
-Agent Instructions & Context      ████████████░░░░  13.3/18
-Navigability & Code Intelligence  ███████░░░░░░░░░   7.4/18
-Testing & Feedback                █░░░░░░░░░░░░░░░   0.8/16
-CI/CD, Automation & Governance    ██████░░░░░░░░░░   5.1/14
-Agent Tooling & Capabilities      ░░░░░░░░░░░░░░░░   0.0/12
-Security & Sandbox                ████████░░░░░░░░   6.2/12
-Spec-Driven Workflow & Docs       █████░░░░░░░░░░░   3.4/10
+Agent Instructions & Context      ███████████████░  17.2/18
+Navigability & Code Intelligence  █████████████░░░  15.1/18
+Testing & Feedback                ████████████░░░░  12.2/16
+CI/CD, Automation & Governance    ████████████░░░░  10.5/14
+Agent Tooling & Capabilities      ███████░░░░░░░░░   5.7/12
+Security & Sandbox                ███████████░░░░░   8.7/12
+Spec-Driven Workflow & Docs       ██████████░░░░░░   6.3/10
 ```
 
-### Top gaps by impact
-1. **Testing & Feedback** (+15.2) — no tests/commands yet. _Expected-empty for greenfield; highest lever once code exists._
-2. **Agent Tooling** (+12.0) — no MCP declaration or Skills. fix: add `.mcp.json`, wire Serena (skill/manual).
-3. **Navigability** (+10.6) — no README, no typed stack. fix: add README + pick a typed stack (partial/manual).
-4. **CI/CD & Governance** (+8.9) — CI steps are placeholders; no CODEOWNERS/Dependabot. fix: `/agent-ready fix cicd_automation_governance` (skill).
-5. **Spec-Driven & Docs** (+6.6) — no issue/PR templates or ADRs. fix: `/agent-ready fix spec_driven_workflow_docs` (skill).
+**Top 5 gaps by impact:**
+
+1. 🔧 Agent Tooling › `standard_skills` (+6.3 pts) — No project Skills (SKILL.md). Fix: `/agent-ready fix agent_tooling_capabilities`.
+2. 🧪 Testing › `fast_feedback_loop` + `coverage_reasonable` (+3.8 pts combined) — No coverage config; no documented watch mode.
+3. 📋 Spec/Docs › `issue_pr_templates` (+1.5 pts) — No GitHub issue/PR templates. Fix: `/agent-ready fix spec_driven_workflow_docs`.
+4. ⚙️ CI/CD › `governance` (+3.5 pts) — No CODEOWNERS or Dependabot. Fix: `/agent-ready fix cicd_automation_governance`.
+5. 🔒 Security › `committed_isolation_config` (+3.4 pts) — No `.devcontainer/`. Fix: `/agent-ready fix security_sandbox`.
+
+---
 
 ## 2. Layer Analysis
 
 | Layer | Score | Max |
 |-------|-------|-----|
-| **Portable** (any agent) | 33.0 | 94.3 |
-| **Target-specific** (claude) | 3.2 | 5.7 |
+| **Portable** | 76 | 100 |
+| **Target-specific** | — | — (no agents declared) |
 
-Target layer is small because only `claude` is declared and its one strong signal —
-the `CLAUDE.md → AGENTS.md` bridge — is already at 100. Remaining target points
-(`custom_commands`, `agent_permission_policy`) are optional / manual.
+All three target sub-criteria (`cross_agent_bridge`, `custom_commands`, `agent_permission_policy`) are marked **na** and excluded from denominators. A portable repo is not penalized for vendor artifacts it doesn't need.
+
+> **Note**: CLAUDE.md is a symlink → AGENTS.md (ideal bridge pattern). Run with `--agents claude` to score `cross_agent_bridge` (would be 100).
+
+---
 
 ## 3. Per-Dimension Detail
 
-Affirmations for sub-criteria at 100; explained findings for everything below.
+### Dimension 1: Agent Instructions & Context — 95.6/100 (17.2/18) ✅
 
-### 1. Agent Instructions & Context — raw 73.75, weighted 13.3/18
 | Sub-criterion | Score |
 |---|---|
-| primary_instruction_file | 75 |
-| instruction_quality | 50 |
-| instruction_conciseness | 100 ✅ |
-| hierarchical_instructions | 50 |
-| cross_agent_bridge | 100 ✅ |
+| `primary_instruction_file` | ✅ 100 |
+| `instruction_quality` | ✅ 100 |
+| `instruction_conciseness` | ✅ 100 |
+| `hierarchical_instructions` | 🟡 75 |
+| `cross_agent_bridge` | — na |
 
-- ✅ **instruction_conciseness (100)** — 63 lines, ~583 tokens, 0 boilerplate; well under the 300-line ceiling.
-- ✅ **cross_agent_bridge (100)** — `CLAUDE.md` symlinks to `AGENTS.md`; one source of truth, no drift.
-- **primary_instruction_file (75)** — _why_: AGENTS.md is the cross-vendor standard agents read first. _evidence_: present and well-structured, but content is templated. _fix_: fill the overview/commands as the project takes shape (skill, Low).
-- **instruction_quality (50)** — _why_: value comes from project-specific commands/paths, not boilerplate. _consequence_: placeholder commands force trial-and-error. _fix_: replace TODO-by-stack placeholders with real commands once the stack is chosen (partial, Med).
-- **hierarchical_instructions (50)** — _why_: scoped per-package files help large repos. _evidence_: single root file, adequate at current size. _fix_: add nested `AGENTS.md` when packages appear (skill, Med).
+**Affirmations**: AGENTS.md is 67 lines, 600 tokens, zero boilerplate. Covers project overview, exact command table, structure, code-style, verification criteria, safe-to-run section, link to agent-execution.md. CLAUDE.md → AGENTS.md symlink is the correct bridge.
 
-### 2. Navigability & Code Intelligence — raw 41.25, weighted 7.4/18
+#### `hierarchical_instructions` — 75
+- **Evidence**: Single-package repo; root AGENTS.md covers all areas.
+- **Why it matters**: Per-package scoped files deliver higher signal-to-token ratio in large repos.
+- **Consequence**: Low risk at current size. Becomes important when packages are added.
+- **Fix**: Not urgent. Scaffold scoped AGENTS.md stubs if subpackages are added. Effort: Med.
+
+---
+
+### Dimension 2: Navigability & Code Intelligence — 83.75/100 (15.1/18) 🟢
+
 | Sub-criterion | Score |
 |---|---|
-| repo_map_availability | 50 |
-| semantic_nav_amenability | 25 |
-| dependency_structure_clarity | 25 |
-| readme_overview | 25 |
-| machine_readable_contracts | 25 |
-| file_size_sanity | 100 ✅ |
+| `repo_map_availability` | 🟡 75 |
+| `semantic_nav_amenability` | ✅ 100 |
+| `dependency_structure_clarity` | ✅ 100 |
+| `readme_overview` | ✅ 100 |
+| `machine_readable_contracts` | 🔴 25 |
+| `file_size_sanity` | ✅ 100 |
 
-- ✅ **file_size_sanity (100)** — 0 oversized files (7 files, 274 LOC total).
-- **readme_overview (25)** — _why_: cheapest high-level map of intent. _consequence_: agents misread purpose/entry points. _fix_: add a root `README.md` (partial, Low).
-- **repo_map_availability (50)** — no code to map yet; cleanly generatable later (partial, Low).
-- **semantic_nav_amenability (25)** / **dependency_structure_clarity (25)** — unlock by choosing a typed stack with a manifest and language server (manual, High).
-- **machine_readable_contracts (25)** — author OpenAPI/proto/GraphQL at boundaries when they exist (manual, High).
+**Affirmations**: TypeScript strict mode + Serena MCP wired. package.json with minimal deps. README is 138 lines of quality content. All TypeScript source files under 500 LOC.
 
-### 3. Testing & Feedback — raw 5.0, weighted 0.8/16
+#### `repo_map_availability` — 75
+- **Evidence**: `repo_map.py` ran successfully (23 files, 34 edges). `docs/ARCHITECTURE.md` provides a module map. No committed symbol-index artifact.
+- **Fix** (partial): `/agent-ready fix navigability_code_intelligence` — commit the `repo_map.py` output as `.agent-ready/repo-map.md`. Effort: Low.
+
+#### `machine_readable_contracts` — 25
+- **Evidence**: No OpenAPI/Protobuf/GraphQL. `/api/usage` and `/api/current-usage` have no formal contract.
+- **Consequence**: Agents must infer request/response shapes from source code.
+- **Fix** (manual): Author an OpenAPI spec for both endpoints. Low urgency for a local tool. Effort: High.
+
+---
+
+### Dimension 3: Testing & Feedback — 76.25/100 (12.2/16) 🟢
+
 | Sub-criterion | Score |
 |---|---|
-| test_suite_present | 0 |
-| test_commands_documented | 25 |
-| fast_feedback_loop | 0 |
-| feedback_quality | 0 |
-| coverage_reasonable | 0 |
+| `test_suite_present` | ✅ 100 |
+| `test_commands_documented` | ✅ 100 |
+| `fast_feedback_loop` | 🟡 50 |
+| `feedback_quality` | 🟡 75 |
+| `coverage_reasonable` | 🟡 50 |
 
-All low — expected for a repo with no code. _Highest-impact dimension once development starts._
-- **test_suite_present (0)** — write a real suite as modules land (manual, High).
-- **test_commands_documented (25)** — AGENTS.md has placeholders; `/agent-ready fix testing_feedback` documents real commands once a runner exists (skill, Low).
-- **feedback_quality / coverage / fast_feedback (0)** — add a type-checker config, coverage target, and a fast-subset convention with the stack (partial, Med).
+**Affirmations**: 9 test files covering all src/ modules. `bun test` documented in AGENTS.md, package.json, and CI.
 
-### 4. CI/CD, Automation & Governance — raw 36.25, weighted 5.1/14
+#### `fast_feedback_loop` — 50
+- **Evidence**: No documented watch mode or per-file filter. Full suite is fast in practice (<1s) but this is implicit, not documented.
+- **Fix** (partial): Add to AGENTS.md: `bun test --watch` for interactive dev; `bun test test/<file>.test.ts` for module-targeted runs. Effort: Med.
+
+#### `feedback_quality` — 75
+- **Evidence**: `strict:true` + `noUncheckedIndexedAccess:true` configured. Descriptive test matchers. `jsdoc_block_count: 3` (minimal).
+- **Fix** (partial): Add JSDoc to exported functions in `src/types.ts`, `src/aggregate.ts`, `src/ranges.ts`. Effort: Med.
+
+#### `coverage_reasonable` — 50
+- **Evidence**: No coverage config. All modules have tests but coverage is unmeasured.
+- **Fix** (partial): `/agent-ready fix testing_feedback` — scaffold coverage config; add threshold in CI (e.g., `bun test --coverage`). Effort: Med.
+
+---
+
+### Dimension 4: CI/CD, Automation & Governance — 75.0/100 (10.5/14) 🟢
+
 | Sub-criterion | Score |
 |---|---|
-| ci_runs_tests_lint | 50 |
-| lint_format_automated | 25 |
-| pre_commit_hooks | 75 |
-| governance | 0 |
+| `ci_runs_tests_lint` | ✅ 100 |
+| `lint_format_automated` | ✅ 100 |
+| `pre_commit_hooks` | ✅ 100 |
+| `governance` | 🔴 0 |
 
-- **pre_commit_hooks (75)** — real generic hooks + `detect-secrets`; add stack hooks (ruff/eslint) later (skill, Low).
-- **ci_runs_tests_lint (50)** — workflow scaffolded with lint+test jobs but echo placeholders; replace with real commands (skill, Low).
-- **lint_format_automated (25)** — no stack linter config yet (skill, Low).
-- **governance (0)** — add `CODEOWNERS` + Dependabot/Renovate via `/agent-ready fix cicd_automation_governance` (skill, Low).
+**Affirmations**: CI runs lint+typecheck+test with `--frozen-lockfile`. Biome configured and wired. Two-layer pre-commit: `.pre-commit-config.yaml` (detect-secrets, whitespace, YAML) + `.githooks/pre-commit` (usage:self).
 
-### 5. Agent Tooling & Capabilities — raw 0.0, weighted 0.0/12
-All sub-criteria at 0 — none scaffolded by `init` (these are project-growth levers).
-- **mcp_declaration (0)** — add a baseline `.mcp.json` (skill, Low).
-- **standard_skills / bundled_helper_scripts (0)** — scaffold a `SKILL.md` + `scripts/` if you build reusable workflows (partial, Med).
-- **nav_comprehension_mcp_servers (0)** — wire Serena once there's code to navigate (manual, Med).
-- **custom_commands (0, target)** — optional `.claude/commands/`; prefer Skills (partial, Low).
+#### `governance` — 0
+- **Evidence**: No CODEOWNERS. No dependabot.yml or renovate.json.
+- **Consequence**: Agent PRs lack clear reviewers; `chart.js`, `@biomejs/biome`, `typescript` accumulate unchecked updates (also a supply_chain_pinning partial gap).
+- **Fix** (skill): `/agent-ready fix cicd_automation_governance` — generates CODEOWNERS + Dependabot config. Resolves both gaps simultaneously. Effort: Low.
 
-### 6. Security & Sandbox — raw 51.25, weighted 6.2/12
+---
+
+### Dimension 5: Agent Tooling & Capabilities — 47.2/100 (5.7/12) 🟡
+
 | Sub-criterion | Score |
 |---|---|
-| committed_isolation_config | 0 |
-| documented_execution_policy | 100 ✅ |
-| agent_permission_policy | 25 |
-| secret_hygiene | 75 |
-| supply_chain_pinning | 25 |
-| injection_hygiene | 100 ✅ |
+| `standard_skills` | 🔴 0 |
+| `bundled_helper_scripts` | 🔴 25 |
+| `mcp_declaration` | 🟡 75 |
+| `nav_comprehension_mcp_servers` | ✅ 100 |
+| `custom_commands` | — na |
 
-- ✅ **documented_execution_policy (100)** — `docs/agent-execution.md` documents LINCE / devcontainer / OS-sandbox / hosted + a safe-to-run list.
-- ✅ **injection_hygiene (100)** — instructions confined to trusted files.
-- **secret_hygiene (75)** — `.gitignore` 100% secret coverage, value-free `.env.example`, `detect-secrets` hook; add CI secret scanning + push protection on the host (partial, Med).
-- **committed_isolation_config (0)** — add a `.devcontainer/` with a default-deny egress allowlist (partial, Med).
-- **agent_permission_policy (25, target)** — author restrictive `.claude/settings.json` deny rules per threat model (manual, Med).
-- **supply_chain_pinning (25)** — commit a lockfile + add Dependabot once dependencies exist (partial, Low).
+**Affirmations**: Serena is wired in `.mcp.json` and enabled in `.claude/settings.local.json`. README documents the integration.
 
-### 7. Spec-Driven Workflow & Docs — raw 33.75, weighted 3.4/10
+#### `standard_skills` — 0
+- **Evidence**: No SKILL.md anywhere in the project repo. `.superpowers/` is gitignored (local only).
+- **Consequence**: Recurring workflows live only in ad-hoc prompts — no reusable capability layer committed to the repo.
+- **Fix** (partial): `/agent-ready fix agent_tooling_capabilities` — scaffold SKILL.md. Author project-specific skills (e.g., `run-dashboard`, `add-tool-support`). **Highest-impact single gap (+6.3 pts)**. Effort: Med.
+
+#### `bundled_helper_scripts` — 25
+- **Evidence**: `scripts/usage-self.ts` exists as a project utility; no Skills-supporting context-efficient helper scripts.
+- **Fix** (partial): Pair with Skills work — ship a `scripts/` dir alongside SKILL.md. Effort: Med.
+
+#### `mcp_declaration` — 75
+- **Evidence**: `.mcp.json` with Serena via uvx. Portability caveat: `uv` must be installed; fetches from GitHub on first launch.
+- **Fix**: Consider pinning the Serena version (`--from git+...@<tag>`). Effort: Low.
+
+---
+
+### Dimension 6: Security & Sandbox — 72.1/100 (8.7/12) 🟢
+
 | Sub-criterion | Score |
 |---|---|
-| spec_tasks_dir | 50 |
-| acceptance_criteria | 75 |
-| issue_pr_templates | 0 |
-| adr_decisions | 0 |
-| docs_comprehension_signals | 25 |
+| `committed_isolation_config` | 🔴 0 |
+| `documented_execution_policy` | ✅ 100 |
+| `agent_permission_policy` | — na |
+| `secret_hygiene` | ✅ 100 |
+| `supply_chain_pinning` | 🟡 75 |
+| `injection_hygiene` | ✅ 100 |
 
-- **acceptance_criteria (75)** — `specs/TEMPLATE.md` ships an acceptance-criteria checklist (partial, Med).
-- **spec_tasks_dir (50)** — `specs/` + template present; write real delta-scoped specs per change (skill, Low).
-- **issue_pr_templates (0)** / **adr_decisions (0)** — scaffold via `/agent-ready fix spec_driven_workflow_docs` (skill/partial, Low–Med).
-- **docs_comprehension_signals (25)** — add an `ARCHITECTURE.md` + `CHANGELOG` as the project grows (partial, Med).
+**Affirmations**: `docs/agent-execution.md` is excellent — vendor-neutral, covers LINCE/devcontainer/OS-sandbox/hosted, safe-to-run list, require-approval list, secrets policy. Secret hygiene is perfect (100% gitignore coverage, values-free .env.example, detect-secrets in pre-commit, 0 committed secrets). No injection-risk content in agent-read docs.
+
+#### `committed_isolation_config` — 0
+- **Evidence**: No `.devcontainer/` or other committed sandbox config.
+- **Consequence**: Each contributor runs agents with inconsistent (often no) isolation; the excellent `agent-execution.md` policy is advisory only.
+- **Fix** (partial): `/agent-ready fix security_sandbox` — scaffolds `.devcontainer/devcontainer.json` with default-deny egress allowlist. Hardening to true isolation is a human security decision. Effort: Med.
+
+#### `supply_chain_pinning` — 75
+- **Evidence**: `bun.lock` committed, CI uses `--frozen-lockfile`. No Dependabot/Renovate.
+- **Fix**: Address via governance fix — Dependabot config covers both gaps simultaneously. Effort: Low.
+
+---
+
+### Dimension 7: Spec-Driven Workflow & Docs — 62.5/100 (6.25/10) 🟡
+
+| Sub-criterion | Score |
+|---|---|
+| `spec_tasks_dir` | 🟡 75 |
+| `acceptance_criteria` | 🟡 50 |
+| `issue_pr_templates` | 🔴 0 |
+| `adr_decisions` | ✅ 100 |
+| `docs_comprehension_signals` | 🟡 75 |
+
+**Affirmations**: `docs/adr/` has 3 well-formed ADRs (Context/Decision/Consequences) capturing all major design decisions. `docs/ARCHITECTURE.md` has data-flow diagram and module descriptions.
+
+#### `spec_tasks_dir` — 75
+- **Evidence**: `specs/` with `001-current-usage-box.md` (detailed delta-scoped spec) and `TEMPLATE.md`. 1 real spec.
+- **Fix**: Write a spec per new feature/change using the template. Effort: Low.
+
+#### `acceptance_criteria` — 50
+- **Evidence**: Spec defines Scope (in/out) + derivation rules but has no explicit "Acceptance Criteria" checklist section.
+- **Fix** (partial): Add `## Acceptance Criteria` section to `specs/TEMPLATE.md` listing checkable conditions. Effort: Med.
+
+#### `issue_pr_templates` — 0
+- **Evidence**: No `.github/ISSUE_TEMPLATE/` or `pull_request_template.md`.
+- **Consequence**: Agent-generated PRs and issues arrive with inconsistent context; reviews lack a quality checklist.
+- **Fix** (skill): `/agent-ready fix spec_driven_workflow_docs` — generates issue templates + PR template. Effort: Low.
+
+#### `docs_comprehension_signals` — 75
+- **Evidence**: ARCHITECTURE.md + 3 ADRs. No CHANGELOG. `jsdoc_block_count: 3` (minimal).
+- **Fix** (partial): Add `CHANGELOG.md`; add JSDoc to public exports. Effort: Med.
+
+---
 
 ## 4. Remediation Roadmap
 
-**Quick wins (skill-fixable, run after deps/code land):**
-- `/agent-ready fix cicd_automation_governance` → real CI commands, CODEOWNERS, Dependabot, stack lint config.
-- `/agent-ready fix testing_feedback` → document real test commands once a runner exists.
-- `/agent-ready fix spec_driven_workflow_docs` → issue/PR templates, ADR dir.
-- `/agent-ready fix agent_tooling_capabilities` → baseline `.mcp.json`.
+### Quick wins — Low effort, high impact
 
-**Manual / project-growth levers (in order):**
-1. Pick the stack → add a manifest + **commit the lockfile** (unlocks supply-chain pinning + dependency clarity).
-2. Add a root `README.md` and fill the AGENTS.md overview + real build/test/lint commands.
-3. Write tests + a type-checker config (the single highest-impact dimension).
-4. Wire a nav MCP server (Serena) and add a `.devcontainer/` with an egress allowlist.
-5. Re-run `/agent-ready scan` to track progress against this baseline.
+| Priority | Gap | Points | Command |
+|---|---|---|---|
+| 1 | `governance` (CODEOWNERS + Dependabot) | +3.5 | `/agent-ready fix cicd_automation_governance` |
+| 2 | `issue_pr_templates` | +1.5 | `/agent-ready fix spec_driven_workflow_docs` |
+| 3 | `committed_isolation_config` (.devcontainer scaffold) | +3.4 | `/agent-ready fix security_sandbox` |
 
-> Note: most zeros above are **expected-empty for greenfield**, not regressions — they
-> become actionable as the codebase materializes.
+### Medium effort — skill-scaffolded or manual
+
+| Priority | Gap | Points | Steps |
+|---|---|---|---|
+| 1 | `standard_skills` | +6.3 | Scaffold SKILL.md; write `run-dashboard` and `add-tool-support` skills |
+| 2 | `coverage_reasonable` | +1.6 | Add `bun test --coverage` + CI threshold |
+| 3 | `fast_feedback_loop` | +1.2 | Document `bun test --watch` + per-file filter in AGENTS.md |
+| 4 | `feedback_quality` | +0.9 | Add JSDoc to exported types and functions |
+| 5 | `acceptance_criteria` | +1.5 | Add AC section to TEMPLATE.md |
+| 6 | `docs_comprehension_signals` | +0.9 | Add CHANGELOG.md |
+
+### High effort — architectural
+
+| Gap | Notes |
+|---|---|
+| `machine_readable_contracts` | Add OpenAPI spec for `/api/usage` + `/api/current-usage`. Low urgency for a local tool. |
+| `committed_isolation_config` (hardening) | `.devcontainer/` scaffold is Med; true egress allowlist + resource limits is High. |
+
+### Brownfield path
+
+1. **Quick wins first** (governance, templates, devcontainer scaffold) — committed artifacts, zero risk
+2. **Skills layer** — scaffold one or two project-specific Skills; bundle repo_map generation as a helper
+3. **Test coverage config** — add threshold, enforce in CI
+4. **CHANGELOG + JSDoc** — improve agent comprehension of historical changes and public APIs
+5. **OpenAPI contracts** — defer until the API stabilizes or external consumers emerge
+
+---
+
+*Run `/agent-ready fix` to auto-generate skill-fixable items.*  
+*Machine-readable scores: `.agent-ready/agent-ready-scores.json`*
